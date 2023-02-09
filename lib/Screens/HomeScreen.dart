@@ -1,15 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:digiatt/Screens/ClassScreens/ClassHomeScreen.dart';
-import 'package:digiatt/Screens/CreateGroup.dart';
-import 'package:digiatt/Screens/ProfileScreen.dart';
-import 'package:digiatt/main.dart';
-import 'package:digiatt/methods/UserModel.dart';
+import 'package:digiatt_new/Screens/ProfileScreen.dart';
+import 'package:digiatt_new/methods/UserModel.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
+import '../main.dart';
 import '../methods/CLassModel.dart';
+import 'ClassScreens/BodyClassHomeScreen.dart';
+import 'CreateGroup.dart';
 import 'JoinClass.dart';
 
 class HomeScreen extends StatefulWidget {
