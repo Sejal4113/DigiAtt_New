@@ -1,9 +1,6 @@
-import 'package:digiatt/Screens/HomeScreen.dart';
-import 'package:digiatt/Screens/LoginScreen.dart';
-import 'package:digiatt/Screens/SignupScreen.dart';
-import 'package:digiatt/Screens/SignupSelect.dart';
-import 'package:digiatt/Screens/VerifyEmailScreen.dart';
-import 'package:digiatt/methods/googlesigninprovider.dart';
+import 'package:digiatt_new/Screens/SignupSelect.dart';
+import 'package:digiatt_new/Screens/VerifyEmailScreen.dart';
+import 'package:digiatt_new/methods/googlesigninprovider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
