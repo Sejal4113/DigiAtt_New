@@ -10,6 +10,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import '../main.dart';
 import '../methods/CLassModel.dart';
 import 'ClassScreens/BodyClassHomeScreen.dart';
+import 'ClassScreens/ClassHomeScreen.dart';
 import 'CreateGroup.dart';
 import 'JoinClass.dart';
 

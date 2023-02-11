@@ -1,10 +1,10 @@
 import 'dart:async';
-
-import 'package:digiatt/Screens/HomeScreen.dart';
-import 'package:digiatt/Screens/LoginScreen.dart';
-import 'package:digiatt/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../main.dart';
+import 'HomeScreen.dart';
+import 'LoginScreen.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   const VerifyEmailScreen({Key? key}) : super(key: key);

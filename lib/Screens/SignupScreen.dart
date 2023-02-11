@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:digiatt/Screens/HomeScreen.dart';
-import 'package:digiatt/Screens/LoginScreen.dart';
-import 'package:digiatt/Screens/VerifyEmailScreen.dart';
-import 'package:digiatt/main.dart';
-import 'package:digiatt/methods/UserModel.dart';
-import 'package:digiatt/methods/googlesigninprovider.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../main.dart';
+import '../methods/UserModel.dart';
+import '../methods/googlesigninprovider.dart';
+import 'LoginScreen.dart';
+import 'VerifyEmailScreen.dart';
 
 class SignupScreen extends StatefulWidget {
   String role;

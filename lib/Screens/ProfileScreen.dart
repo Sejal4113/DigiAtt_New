@@ -1,13 +1,14 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:digiatt/Screens/LoginScreen.dart';
-import 'package:digiatt/main.dart';
-import 'package:digiatt/methods/UserModel.dart';
+import 'package:digiatt_new/methods/UserModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../main.dart';
+import 'LoginScreen.dart';
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({Key? key}) : super(key: key);

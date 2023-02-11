@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:digiatt/main.dart';
+import 'package:digiatt_new/main.dart';
+import 'package:digiatt_new/methods/CLassModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:digiatt/methods/CLassModel.dart';
+
 
 import '../../methods/UserModel.dart';
 

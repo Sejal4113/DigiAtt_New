@@ -1,13 +1,14 @@
 
-import 'package:digiatt/methods/CLassModel.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
+import '../../methods/CLassModel.dart';
 import '../../methods/UserModel.dart';
 import 'BodyClassHomeScreen.dart';
 import 'ClassAssignmentScreen.dart';
-import 'ClassParticipantsScreen.dart';
+import 'ClassParticipantScreen.dart';
 
 class ClassHomeScreen extends StatefulWidget {
   ClassModel classData;

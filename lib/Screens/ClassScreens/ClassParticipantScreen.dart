@@ -1,5 +1,6 @@
-import 'package:digiatt/methods/CLassModel.dart';
 import 'package:flutter/material.dart';
+
+import '../../methods/CLassModel.dart';
 
 class ClassParticipantsScreen extends StatefulWidget {
   ClassModel classModel;

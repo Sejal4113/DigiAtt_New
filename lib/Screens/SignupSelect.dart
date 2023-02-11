@@ -1,5 +1,6 @@
-import 'package:digiatt/Screens/SignupScreen.dart';
 import 'package:flutter/material.dart';
+
+import 'SignupScreen.dart';
 
 class SignupSelect extends StatefulWidget {
   const SignupSelect({Key? key}) : super(key: key);
