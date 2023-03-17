@@ -4,10 +4,12 @@ import '../../methods/CLassModel.dart';
 
 class ClassAssignmentScreen extends StatefulWidget {
   ClassModel classModel;
-  ClassAssignmentScreen({Key? key,required this.classModel}) : super(key: key);
+
+  ClassAssignmentScreen({Key? key, required this.classModel}) : super(key: key);
 
   @override
-  State<ClassAssignmentScreen> createState() => _ClassAssignmentScreenState(classModel);
+  State<ClassAssignmentScreen> createState() =>
+      _ClassAssignmentScreenState(classModel);
 }
 
 class _ClassAssignmentScreenState extends State<ClassAssignmentScreen> {

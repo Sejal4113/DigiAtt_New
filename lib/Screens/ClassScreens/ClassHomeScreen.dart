@@ -1,5 +1,5 @@
-
-
+import 'package:digiatt_new/Screens/ChatScreens/ChatHomeScreen.dart';
+import 'package:digiatt_new/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -21,7 +21,7 @@ class ClassHomeScreen extends StatefulWidget {
 
 class _ClassHomeScreenState extends State<ClassHomeScreen> {
   var classData;
-  int index =0;
+  int index = 0;
 
   _ClassHomeScreenState(this.classData);
 
@@ -33,15 +33,16 @@ class _ClassHomeScreenState extends State<ClassHomeScreen> {
         appBar: AppBar(
           title: Text(classData.name),
           actions: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.messenger_rounded)),
+            IconButton(onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChatHomeScreen(classData: classData,)));
+            }, icon: Icon(Icons.messenger_rounded)),
           ],
         ),
-
         body: getPage(index),
         bottomNavigationBar: Container(
           color: Theme.of(context).colorScheme.primary,
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 8,horizontal: 16),
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: GNav(
               gap: 12,
               color: Colors.white,
@@ -71,17 +72,24 @@ class _ClassHomeScreenState extends State<ClassHomeScreen> {
           ),
         ));
   }
-  Widget? getPage(int index){
+
+  Widget? getPage(int index) {
     switch (index) {
       case 0:
-        return BodyClassHomeScreen(classModel: classData,);
+        return BodyClassHomeScreen(
+          classModel: classData,
+        );
         break;
 
       case 1:
-        return ClassAssignmentScreen(classModel: classData,);
+        return ClassAssignmentScreen(
+          classModel: classData,
+        );
         break;
       case 2:
-        return ClassParticipantsScreen(classModel: classData,);
+        return ClassParticipantsScreen(
+          classModel: classData,
+        );
         break;
     }
   }

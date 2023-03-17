@@ -65,10 +65,10 @@ class _CreateGroupState extends State<CreateGroup> {
                           : FileImage(File(ImageFile!.path)),
                       child: ImageFile == null
                           ? Icon(
-                        Icons.add_photo_alternate_outlined,
-                        size: size.width * 0.18,
-                        color: Colors.grey,
-                      )
+                              Icons.add_photo_alternate_outlined,
+                              size: size.width * 0.18,
+                              color: Colors.grey,
+                            )
                           : null,
                     ),
                   )),
@@ -86,7 +86,8 @@ class _CreateGroupState extends State<CreateGroup> {
                   children: [
                     TextFormField(
                       controller: _name,
-                      validator: (value) => _name.text.isEmpty ? 'Enter Class Name' : null,
+                      validator: (value) =>
+                          _name.text.isEmpty ? 'Enter Class Name' : null,
                       decoration: InputDecoration(
                         focusColor: Theme.of(context).colorScheme.primary,
                         hintStyle: TextStyle(fontSize: 12),
@@ -116,7 +117,8 @@ class _CreateGroupState extends State<CreateGroup> {
                         child: ElevatedButton(
                             onPressed: () {
                               if (FormKey.currentState!.validate()) {
-                                createClass(_name.text.trim(), _description.text.trim());
+                                createClass(_name.text.trim(),
+                                    _description.text.trim());
                               }
                             },
                             child: Text(
@@ -133,14 +135,15 @@ class _CreateGroupState extends State<CreateGroup> {
   }
 
   getImagefromGallery() async {
-    ImageFile = await imagePicker.pickImage(source: ImageSource.gallery,imageQuality: 50);
+    ImageFile = await imagePicker.pickImage(
+        source: ImageSource.gallery, imageQuality: 50);
 
     setState(() {
       ImageFile;
     });
   }
 
-  createClass(String name, String description) async{
+  createClass(String name, String description) async {
     await uploadFile();
 
     final id = DateTime.now().millisecondsSinceEpoch.toString();
@@ -148,39 +151,53 @@ class _CreateGroupState extends State<CreateGroup> {
     final docRef = FirebaseFirestore.instance.collection('Classes').doc(id);
 
     docRef.set({
-      'id' : id,
-      'photourl' : Urldownload,
-      'name' : name,
-      'description' : description
-    }).then((value) async{
-      var snap = await FirebaseFirestore.instance.collection('Users').doc(cuser.uid).get();
+      'id': id,
+      'photourl': Urldownload,
+      'name': name,
+      'description': description
+    }).then((value) async {
+      var snap = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(cuser.uid)
+          .get();
       var map = snap.data()!;
 
       try {
-        await FirebaseFirestore.instance.collection('Classes').doc(id).collection('members').doc(cuser.uid).set(map);
+        await FirebaseFirestore.instance
+            .collection('Classes')
+            .doc(id)
+            .collection('members')
+            .doc(cuser.uid)
+            .set(map);
         var classSnap = await docRef.get();
-        await FirebaseFirestore.instance.collection('Users').doc(cuser.uid).collection('inGroup').doc(id).set(classSnap.data()!);
-        snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('Group Created')));
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(cuser.uid)
+            .collection('inGroup')
+            .doc(id)
+            .set(classSnap.data()!);
+        snackbarKey.currentState!
+            .showSnackBar(SnackBar(content: Text('Group Created')));
         Navigator.of(context).pop();
         Navigator.of(context).pop();
-
       } on Exception catch (e) {
-        snackbarKey.currentState!.showSnackBar(SnackBar(content: Text(e.toString())));
+        snackbarKey.currentState!
+            .showSnackBar(SnackBar(content: Text(e.toString())));
       }
     });
-
   }
+
   uploadFile() async {
     showDialog(
         context: NavigatorKey.currentContext!,
         barrierDismissible: false,
         builder: (context) => Center(
-          child: CircularProgressIndicator(),
-        ));
+              child: CircularProgressIndicator(),
+            ));
 
-    if(ImageFile == null){
+    if (ImageFile == null) {
       Urldownload = '';
-    }else {
+    } else {
       final path = 'groupImages/${ImageFile!.name}';
       final file = File(ImageFile!.path);
 

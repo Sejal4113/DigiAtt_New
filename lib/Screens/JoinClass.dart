@@ -82,7 +82,7 @@ class _JoinClassState extends State<JoinClass> {
                   width: size.width * 0.80,
                   child: ElevatedButton(
                     onPressed: () {
-                      if(FormKey.currentState!.validate())
+                      if (FormKey.currentState!.validate())
                         JoinClass1(_code.text.trim());
                     },
                     child: Text('Join Class'),
@@ -95,39 +95,50 @@ class _JoinClassState extends State<JoinClass> {
       ),
     );
   }
+
   Future JoinClass1(String code) async {
     showDialog(
         context: NavigatorKey.currentContext!,
         barrierDismissible: false,
         builder: (context) => Center(
-          child: CircularProgressIndicator(),
-        ));
-
-
+              child: CircularProgressIndicator(),
+            ));
 
     var classRef = FirebaseFirestore.instance.collection('Classes').doc(code);
-    var classSnap = await FirebaseFirestore.instance.collection('Classes').doc(code).get();
-    if(classSnap.exists){
+    var classSnap =
+        await FirebaseFirestore.instance.collection('Classes').doc(code).get();
+    if (classSnap.exists) {
       var userSnap = await classRef.collection('members').doc(cuser.uid).get();
-      if(userSnap.exists){
-        snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('You are already a member of this class')));
+      if (userSnap.exists) {
+        snackbarKey.currentState!.showSnackBar(
+            SnackBar(content: Text('You are already a member of this class')));
         Navigator.of(context).pop();
-      }else{
-        var map = await FirebaseFirestore.instance.collection('Users').doc(cuser.uid).get();
+      } else {
+        var map = await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(cuser.uid)
+            .get();
         await classRef.collection('members').doc(cuser.uid).set(map.data()!);
         try {
-          await FirebaseFirestore.instance.collection("Users").doc(cuser.uid).collection('inGroup').doc(code).set(classSnap.data()!);
+          await FirebaseFirestore.instance
+              .collection("Users")
+              .doc(cuser.uid)
+              .collection('inGroup')
+              .doc(code)
+              .set(classSnap.data()!);
         } on FirebaseException catch (e) {
-          snackbarKey.currentState!.showSnackBar(SnackBar(content: Text(e.message!)));
+          snackbarKey.currentState!
+              .showSnackBar(SnackBar(content: Text(e.message!)));
         }
-        snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('Class Joined Successfully')));
+        snackbarKey.currentState!
+            .showSnackBar(SnackBar(content: Text('Class Joined Successfully')));
         Navigator.of(context).pop();
       }
-
-    }else{
-      snackbarKey.currentState!.showSnackBar(SnackBar(content: Text("Class Doesn't Exists. Check the code and try again. ")));
+    } else {
+      snackbarKey.currentState!.showSnackBar(SnackBar(
+          content:
+              Text("Class Doesn't Exists. Check the code and try again. ")));
       Navigator.of(context).pop();
     }
-
   }
 }

@@ -23,18 +23,19 @@ class GoogleSignInProvider extends ChangeNotifier {
       idToken: googleAuth.idToken,
     );
 
-    await FirebaseAuth.instance.signInWithCredential(credential).then((value)
-    {
-      FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser!.uid).set(
-          {
-            'email' : _user!.email,
-            'name' : _user!.displayName,
-            'photourl' : _user!.photoUrl,
-            'role' : role
-          }).then((value) => {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => HomeScreen()))
-      });
+    await FirebaseAuth.instance.signInWithCredential(credential).then((value) {
+      FirebaseFirestore.instance
+          .collection('Users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .set({
+        'email': _user!.email,
+        'name': _user!.displayName,
+        'photourl': _user!.photoUrl,
+        'role': role
+      }).then((value) => {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => HomeScreen()))
+              });
     });
   }
 }

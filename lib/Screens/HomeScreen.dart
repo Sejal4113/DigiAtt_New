@@ -30,10 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'DigiAtt',
-          style: TextStyle(fontFamily: 'Inter'),
-        ),
+        title: Text('DigiAtt'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -55,30 +52,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
             return user1 == null
                 ? const Center(
-              child: Text('No user'),
-            )
+                    child: Text('No user'),
+                  )
                 : SpeedDial(
-              overlayColor: Colors.black,
-              overlayOpacity: 0.4,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              icon: CupertinoIcons.add,
-              activeIcon: CupertinoIcons.multiply,
-              children: [
-                SpeedDialChild(
-                    visible: (user1.role == 'teacher') ? true: false,
-                    onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => CreateGroup())),
-                    child: Icon(Icons.group_add),
-                    label: 'Create class'),
-                SpeedDialChild(
-                    onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => JoinClass())),
-                    child: Icon(Icons.group_add_outlined),
-                    label: 'Join class')
-              ],
-            );
+                    overlayColor: Colors.black,
+                    overlayOpacity: 0.4,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    icon: CupertinoIcons.add,
+                    activeIcon: CupertinoIcons.multiply,
+                    children: [
+                      SpeedDialChild(
+                          visible: (user1.role == 'teacher') ? true : false,
+                          onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) => CreateGroup())),
+                          child: Icon(Icons.group_add),
+                          label: 'Create class'),
+                      SpeedDialChild(
+                          onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) => JoinClass())),
+                          child: Icon(Icons.group_add_outlined),
+                          label: 'Join class')
+                    ],
+                  );
           } else {
             return Center(
               child: CircularProgressIndicator(),
@@ -89,37 +86,67 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
+      body: Stack(
+        children: [
+          Container(
+            color: Colors.grey.shade100,
+          ),
+          StreamBuilder(
+            stream: readClass(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: Text('Loading...'));
+              } else if (snapshot.hasError) {
+                return Container(
+                  child: Center(
+                    child: Text('Something went wrong'),
+                  ),
+                );
+              } else if (snapshot.hasData) {
+                final users = snapshot.data!;
 
-      body: StreamBuilder(
-        stream: readClass(),
-        builder: (context,snapshot)   {
-          if(snapshot.connectionState == ConnectionState.waiting){
-            return Center(child: CircularProgressIndicator(),);
-          }else if (snapshot.hasError){
-            return Container(child: Center(child: Text('Something went wrong'),),);
-          } else if(snapshot.hasData){
-            final users = snapshot.data!;
-
-            return ListView(children: users.map(buildClass).toList());
-          }else{
-            return Center(child: CircularProgressIndicator());
-          }
-          return Center(child: CircularProgressIndicator(),);
-        },
+                return ListView(children: users.map(buildClass).toList());
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }
+            },
+          ),
+        ],
       ),
     );
   }
 
+  Widget buildClass(ClassModel user) => Card(
+        child: ListTile(
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => ClassHomeScreen(classData: user))),
+          leading: user.photourl == ''
+              ? CircleAvatar(
+                  backgroundColor: Colors.grey.withOpacity(0.5),
+                  child: Icon(
+                    Icons.group,
+                    color: Colors.grey.shade700,
+                  ),
+                )
+              : CircleAvatar(
+                  backgroundImage: NetworkImage(user.photourl),
+                ),
+          title: Text(
+            user.name,
+            style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.w600, letterSpacing: 0.3),
+          ),
+          subtitle: Text(user.description),
+        ),
+      );
 
-  Widget buildClass(ClassModel user) => ListTile(
-    onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => ClassHomeScreen(classData: user))),
-    leading: user.photourl == '' ? CircleAvatar(backgroundColor: Colors.grey.withOpacity(0.5),child: Icon(Icons.group, color: Colors.grey.shade700,),) :CircleAvatar(backgroundImage: NetworkImage(user.photourl),),
-    title: Text(user.name),
-    subtitle: Text(user.description),
-  );
-
-
-  Stream<List<ClassModel>> readClass() => FirebaseFirestore.instance.collection('Users').doc(user.uid).collection('inGroup').snapshots().map((snapshot) => snapshot.docs.map((doc) => ClassModel.fromJson(doc.data())).toList());
+  Stream<List<ClassModel>> readClass() => FirebaseFirestore.instance
+      .collection('Users')
+      .doc(user.uid)
+      .collection('inGroup')
+      .snapshots()
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => ClassModel.fromJson(doc.data())).toList());
 
   Future<UserModel?> ReadUser() async {
     final Docid = FirebaseFirestore.instance.collection("Users").doc(user.uid);

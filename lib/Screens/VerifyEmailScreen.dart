@@ -16,16 +16,16 @@ class VerifyEmailScreen extends StatefulWidget {
 class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   bool isEmailVerified = false;
   bool canResend = false;
-  Timer? timer1,timer2;
+  Timer? timer1, timer2;
   int Timeleft = 120;
 
   void starttimer() {
-    timer2 =Timer.periodic(Duration(seconds: 1), (timer) {
-      if(Timeleft>0){
+    timer2 = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (Timeleft > 0) {
         setState(() {
           Timeleft--;
         });
-      }else{
+      } else {
         timer2?.cancel();
         canResend = true;
       }
@@ -36,8 +36,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     final user = FirebaseAuth.instance.currentUser!;
     try {
       await user.sendEmailVerification().then((value) => {
-        snackbarKey.currentState?.showSnackBar(SnackBar(content: Text('Verification mail sent')))
-      });
+            snackbarKey.currentState?.showSnackBar(
+                SnackBar(content: Text('Verification mail sent')))
+          });
       setState(() => canResend = false);
       Timeleft = 120;
       starttimer();
@@ -68,7 +69,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
 
       timer1 = Timer.periodic(
         Duration(seconds: 3),
-            (_) => checkEmailVerified(),
+        (_) => checkEmailVerified(),
       );
     }
   }
@@ -93,13 +94,13 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
           height: size.height,
           decoration: BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.secondary
-                ],
-              )),
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Theme.of(context).colorScheme.primary,
+              Theme.of(context).colorScheme.secondary
+            ],
+          )),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -125,7 +126,8 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               ),
               Container(
                 height: 45,
-                margin: EdgeInsets.only(top: 30,left: 30,right: 30,bottom: 10),
+                margin:
+                    EdgeInsets.only(top: 30, left: 30, right: 30, bottom: 10),
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: canResend ? sendVerificationlink : null,
@@ -142,9 +144,27 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                       side: BorderSide(width: 2, color: Colors.white)),
                 ),
               ),
-              Container( width: 300,child: TextButton(onPressed: () => FirebaseAuth.instance.signOut().then((value) => Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen()))), child: Text('Cancel',style: TextStyle(color: Colors.white, fontSize: 18,),))),
-              SizedBox(height: size.height/15,),
-              Text('Please wait to try again : '+ Timeleft.toString(), style: TextStyle(color: Colors.white,fontSize: 25),),
+              Container(
+                  width: 300,
+                  child: TextButton(
+                      onPressed: () => FirebaseAuth.instance.signOut().then(
+                          (value) => Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) => LoginScreen()))),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ))),
+              SizedBox(
+                height: size.height / 15,
+              ),
+              Text(
+                'Please wait to try again : ' + Timeleft.toString(),
+                style: TextStyle(color: Colors.white, fontSize: 25),
+              ),
             ],
           ),
         ),

@@ -13,8 +13,7 @@ import 'VerifyEmailScreen.dart';
 class SignupScreen extends StatefulWidget {
   String role;
 
-
-  SignupScreen({Key? key,required this.role}) : super(key: key);
+  SignupScreen({Key? key, required this.role}) : super(key: key);
 
   @override
   State<SignupScreen> createState() => _SignupScreenState(role);
@@ -23,9 +22,7 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   String role1;
 
-  _SignupScreenState(
-      this.role1
-      );
+  _SignupScreenState(this.role1);
 
   @override
   final FormKey = GlobalKey<FormState>();
@@ -35,9 +32,9 @@ class _SignupScreenState extends State<SignupScreen> {
   var _password = TextEditingController();
 
   bool obscure = false, obscure1 = false;
+
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
 
     void initState() {
       obscure = false;
@@ -54,22 +51,28 @@ class _SignupScreenState extends State<SignupScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.secondary
-                  ])),
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.secondary
+              ])),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 SizedBox(
                   height: size.height / 10,
                 ),
-                Text('Register', style: Theme.of(context).textTheme.headline4),
+                Text('Register',
+                    style: TextStyle(
+                        fontSize: size.height * 0.07,
+                        fontFamily: 'Inter',
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600)),
                 SizedBox(
                   height: size.height / 20,
                 ),
                 Container(
                   margin: EdgeInsets.only(left: 8, right: 8),
-                  width: double.infinity,
+                  width: size.width * 0.93,
+                  height: size.height * 0.6,
                   child: Card(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20)),
@@ -78,160 +81,188 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Form(
-                        key:FormKey ,
-                        child:  Column(
+                        key: FormKey,
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 7, left: 10.0),
-                              child: Text(
-                                'Name',
-                                style: Theme.of(context).textTheme.headline2,
-                              ),
-                            ),
-                            TextFormField(
-                              controller: _name,
-                              decoration: InputDecoration(
-                                  prefixIcon: Icon(Icons.person_outline),
-                                  hintText: 'Enter Name'),
-                              validator: (value) => (value!.isEmpty || !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) ? 'Enter Valid Name' : null,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 10.0, top: 10.0),
-                              child: Text(
-                                'E-mail',
-                                style: Theme.of(context).textTheme.headline2,
-                              ),
-                            ),
-                            TextFormField(
-                              keyboardType: TextInputType.emailAddress,
-                              controller: _email,
-                              decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.email_outlined),
-                                hintText: 'Enter Email',
-                              ),
-                              autovalidateMode: AutovalidateMode.onUserInteraction,
-                              validator: (email) => (email != null && !EmailValidator.validate(_email.text.trim()))
-                                  ? 'Enter a Valid Email'
-                                  : null,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 10.0, top: 10.0),
-                              child: Text(
-                                'Password',
-                                style: Theme.of(context).textTheme.headline2,
-                              ),
-                            ),
-                            TextFormField(
-                              controller: _password,
-                              obscureText: !obscure,
-                              autovalidateMode: AutovalidateMode.onUserInteraction,
-                              decoration: InputDecoration(
-                                  prefixIcon: Icon(Icons.lock_outline),
-                                  hintText: 'Enter Password',
-                                  suffixIcon: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        obscure = !obscure;
-                                      });
-                                    },
-                                    icon: Icon(
-                                      obscure
-                                          ? Icons.visibility_off
-                                          : Icons.visibility,
-                                    ),
-                                  )),
-                              validator: (value) => (_password.text.isEmpty || (_password.text.length < 8)) ? 'Enter Valid Password with min 8 characters' : null,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 10.0, top: 10.0),
-                              child: Text(
-                                'Confirm Password',
-                                style: Theme.of(context).textTheme.headline2,
-                              ),
-                            ),
-                            TextFormField(
-                              controller: _repassword,
-                              obscureText: !obscure1,
-                              decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.lock_outline),
-                                hintText: 'Re-Enter Password',
-                                suffixIcon: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        obscure1 = !obscure1;
-                                      });
-                                    },
-                                    icon: Icon(!obscure1
-                                        ? Icons.visibility
-                                        : Icons.visibility_off)),
-                              ),
-                              validator: (value) => (_password.text.trim() != _repassword.text.trim()) ? 'Passwords don\'t Match ' : null,
-                            ),
-                            SizedBox(
-                              height: size.height / 20,
-                            ),
-                            Container(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  if(FormKey.currentState!.validate()){
-                                    Register();
-                                  }
-
-                                },
-                                child: Text('Register'),
-                                style: ElevatedButton.styleFrom(
-                                    textStyle:
-                                    Theme.of(context).textTheme.headline3,
-                                    elevation: 7,
-
-
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20))),
-                              ),
-                            ),
-                            // SizedBox(
-                            //   height: 7,
-                            // ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Already a User? ',
-                                    style: TextStyle(
-                                        fontFamily: 'Inter',
-                                        fontWeight: FontWeight.w600)),
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => LoginScreen()));
-                                  },
-                                  child: Text(
-                                    'Login',
-                                    style: TextStyle(
-                                      decoration: TextDecoration.underline,
-                                      color: Colors.blueAccent,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                )
+                                Text(
+                                  'Name',
+                                  style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16),
+                                ),
+                                TextFormField(
+                                  controller: _name,
+                                  decoration: InputDecoration(
+                                      prefixIcon: Icon(Icons.person_outline),
+                                      hintText: 'Enter Name'),
+                                  validator: (value) => (value!.isEmpty ||
+                                          !RegExp(r'^[a-z A-Z]+$')
+                                              .hasMatch(value))
+                                      ? 'Enter Valid Name'
+                                      : null,
+                                ),
                               ],
                             ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'E-mail',
+                                  style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16),
+                                ),
+                                TextFormField(
+                                  keyboardType: TextInputType.emailAddress,
+                                  controller: _email,
+                                  decoration: InputDecoration(
+                                    prefixIcon: Icon(Icons.email_outlined),
+                                    hintText: 'Enter Email',
+                                  ),
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: (email) => (email != null &&
+                                          !EmailValidator.validate(
+                                              _email.text.trim()))
+                                      ? 'Enter a Valid Email'
+                                      : null,
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Password',
+                                  style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16),
+                                ),
+                                TextFormField(
+                                  controller: _password,
+                                  obscureText: !obscure,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  decoration: InputDecoration(
+                                      prefixIcon: Icon(Icons.lock_outline),
+                                      hintText: 'Enter Password',
+                                      suffixIcon: IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            obscure = !obscure;
+                                          });
+                                        },
+                                        icon: Icon(
+                                          obscure
+                                              ? Icons.visibility_off
+                                              : Icons.visibility,
+                                        ),
+                                      )),
+                                  validator: (value) => (_password
+                                              .text.isEmpty ||
+                                          (_password.text.length < 8))
+                                      ? 'Enter Valid Password with min 8 characters'
+                                      : null,
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Confirm Password',
+                                  style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16),
+                                ),
+                                TextFormField(
+                                  controller: _repassword,
+                                  obscureText: !obscure1,
+                                  decoration: InputDecoration(
+                                    prefixIcon: Icon(Icons.lock_outline),
+                                    hintText: 'Re-Enter Password',
+                                    suffixIcon: IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            obscure1 = !obscure1;
+                                          });
+                                        },
+                                        icon: Icon(!obscure1
+                                            ? Icons.visibility
+                                            : Icons.visibility_off)),
+                                  ),
+                                  validator: (value) =>
+                                      (_password.text.trim() !=
+                                              _repassword.text.trim())
+                                          ? 'Passwords don\'t Match '
+                                          : null,
+                                ),
+                              ],
+                            ),
+
+                            Container(
+                              width: double.infinity,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        if (FormKey.currentState!.validate()) {
+                                          Register();
+                                        }
+                                      },
+                                      child: Text('Register'),
+                                      style: ElevatedButton.styleFrom(
+                                          textStyle: TextStyle(fontSize: 20,fontWeight: FontWeight.w600),
+                                          elevation: 7,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(20))),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 3,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('Already a User? ',
+                                          style: TextStyle(
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w600)),
+                                      InkWell(
+                                        onTap: () {
+                                          Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      LoginScreen()));
+                                        },
+                                        child: Text(
+                                          'Login',
+                                          style: TextStyle(
+                                            decoration: TextDecoration.underline,
+                                            color: Colors.blueAccent,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              )
+                            ),
+
                           ],
                         ),
                       ),
                     ),
                   ),
-
                 ),
                 SizedBox(
-                  height: size.height / 20,
+                  height: size.height / 30,
                 ),
                 Text(
                   'Sign in with',
-                  style: Theme.of(context).textTheme.headline3,
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600,letterSpacing: 1,fontSize: 16),
                 ),
                 SizedBox(
                   height: 10,
@@ -239,16 +270,19 @@ class _SignupScreenState extends State<SignupScreen> {
                 InkWell(
                   onTap: () {
                     try {
-                      final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
+                      final provider = Provider.of<GoogleSignInProvider>(
+                          context,
+                          listen: false);
                       provider.googleLogin(context, role1);
                     } on Exception catch (e) {
-                      snackbarKey.currentState?.showSnackBar(SnackBar(content: Text(e.toString())));
+                      snackbarKey.currentState
+                          ?.showSnackBar(SnackBar(content: Text(e.toString())));
                     }
                   },
                   child: CircleAvatar(
                       radius: 25,
                       backgroundImage:
-                      AssetImage('lib/assets/images/google.jpg')),
+                          AssetImage('lib/assets/images/image.jpg')),
                 )
               ],
             ),
@@ -263,23 +297,33 @@ class _SignupScreenState extends State<SignupScreen> {
         context: context,
         barrierDismissible: false,
         builder: (context) => Center(
-          child: CircularProgressIndicator(),
-        ));
-
+              child: CircularProgressIndicator(),
+            ));
 
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _email.text.trim(), password: _password.text.trim()).then((value){
-        final docRef = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser!.uid);
-
-        final user = UserModel(name: _name.text.trim(), email: _email.text.trim(), photourl: "", role: role1);
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: _email.text.trim(), password: _password.text.trim())
+          .then((value) {
+            if(value != null){
+              value.user?.updateDisplayName(_name.text.trim());
+              value.user?.updatePhotoURL("");
+            }
+        final docRef = FirebaseFirestore.instance
+            .collection('Users')
+            .doc(FirebaseAuth.instance.currentUser!.uid);
+        final user = UserModel(
+            name: _name.text.trim(),
+            email: _email.text.trim(),
+            photourl: "",
+            role: role1);
         final json = user.toJson();
 
         docRef.set(json).then((value) {
           Navigator.of(context).pop();
-          NavigatorKey.currentState!.pushReplacement(MaterialPageRoute(builder: (context) => VerifyEmailScreen()));
+          NavigatorKey.currentState!.pushReplacement(
+              MaterialPageRoute(builder: (context) => VerifyEmailScreen()));
         });
-
       });
     } on FirebaseAuthException catch (e) {
       snackbarKey.currentState

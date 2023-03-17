@@ -21,13 +21,13 @@ class _SignupSelectState extends State<SignupSelect> {
           height: size.height,
           decoration: BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.secondary,
-                ],
-              )),
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Theme.of(context).colorScheme.primary,
+              Theme.of(context).colorScheme.secondary,
+            ],
+          )),
           child: Column(
             children: [
               SizedBox(
@@ -35,7 +35,7 @@ class _SignupSelectState extends State<SignupSelect> {
               ),
               Text(
                 'DigiAtt',
-                style: Theme.of(context).textTheme.headline4,
+                style: TextStyle(fontFamily:'Inter',fontSize: size.width/6,color: Colors.white,fontWeight: FontWeight.w600),
               ),
               SizedBox(
                 height: size.height / 4,
@@ -43,15 +43,19 @@ class _SignupSelectState extends State<SignupSelect> {
               ElevatedButton(
                 onPressed: () {
                   //TODO create a nagivator which passes data to signup screen
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => SignupScreen(role: 'teacher',)));
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SignupScreen(
+                                role: 'teacher',
+                              )));
                 },
                 child: Padding(
                   padding: EdgeInsets.only(
                       top: 14.0, bottom: 14, left: 30, right: 30),
                   child: Text(
                     'I am a Teacher',
-                    style: Theme.of(context).textTheme.headline3,
+                    style: TextStyle(fontSize: size.width/20,),
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -59,7 +63,6 @@ class _SignupSelectState extends State<SignupSelect> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
                   side: BorderSide(color: Colors.white, width: 2),
-
                 ),
               ),
               SizedBox(
@@ -71,14 +74,15 @@ class _SignupSelectState extends State<SignupSelect> {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SignupScreen(role: "student")));
+                            builder: (context) =>
+                                SignupScreen(role: "student")));
                   },
                   child: Padding(
                     padding: EdgeInsets.only(
                         top: 14.0, bottom: 14, left: 30, right: 30),
                     child: Text(
                       'I am a Student',
-                      style: Theme.of(context).textTheme.headline3,
+                      style: TextStyle(fontSize: size.width/20,),
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -86,7 +90,6 @@ class _SignupSelectState extends State<SignupSelect> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20)),
                     side: BorderSide(color: Colors.white, width: 2),
-
                   )),
             ],
           ),

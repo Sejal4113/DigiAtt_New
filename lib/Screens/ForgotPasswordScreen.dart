@@ -59,7 +59,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           children: [
                             Text(
                               'Enter your Email',
-                              style: Theme.of(context).textTheme.headline2,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             TextFormField(
                               keyboardType: TextInputType.emailAddress,
@@ -69,10 +69,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 hintText: 'Enter Email',
                               ),
                               autovalidateMode:
-                              AutovalidateMode.onUserInteraction,
+                                  AutovalidateMode.onUserInteraction,
                               validator: (email) => (email != null &&
-                                  !EmailValidator.validate(
-                                      _email.text.trim()))
+                                      !EmailValidator.validate(
+                                          _email.text.trim()))
                                   ? 'Enter a Valid Email'
                                   : null,
                             ),
@@ -84,11 +84,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor:
-                                  Theme.of(context).colorScheme.secondary,
+                                      Theme.of(context).colorScheme.primary,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20)),
                                   textStyle:
-                                  Theme.of(context).textTheme.headline3,
+                                      Theme.of(context).textTheme.bodyLarge,
                                 ),
                                 onPressed: () {
                                   resetPassword();
@@ -99,8 +99,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'An Email with a link to reset password with be sent if you are already registered with us',
-                                style: TextStyle(fontSize: 13),
+                                'An Email with a link to reset password with be sent if you are already registered with us.',
+                                style: TextStyle(fontSize: 12),
                               ),
                             ),
                           ],
@@ -133,9 +133,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       });
       Navigator.of(context).popUntil((route) => route.isFirst);
     } on FirebaseAuthException catch (e) {
-      snackbarKey.currentState?.showSnackBar(SnackBar(content: Text(e.message!)));
+      snackbarKey.currentState
+          ?.showSnackBar(SnackBar(content: Text(e.message!)));
       Navigator.of(context).pop();
-
     }
   }
 }

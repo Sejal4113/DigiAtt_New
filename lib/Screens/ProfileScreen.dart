@@ -26,6 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ImagePicker imagePicker = ImagePicker();
   var _email = TextEditingController();
   bool editingEnabled = false;
+
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
@@ -48,8 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           backgroundColor: Colors.transparent,
           elevation: 0.0,
           title: const Text(
-            'Profile',
-            style: TextStyle(fontFamily: 'Inter'),
+            'Profile'
           ),
         ),
         body: FutureBuilder<UserModel?>(
@@ -63,205 +63,208 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               return user == null
                   ? const Center(
-                child: Text('No user'),
-              )
+                      child: Text('No user'),
+                    )
                   : Container(
-                width: double.infinity,
-                height: double.infinity,
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Theme.of(context).colorScheme.primary,
-                        Theme.of(context).colorScheme.secondary
-                      ],
-                    )),
-                child: SingleChildScrollView(
-                  child: Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: size.height / 6,
-                        ),
-                        Center(
-                          child: Material(
-                            elevation: 4,
-                            shape: CircleBorder(
-                              side: BorderSide.none,
-                            ),
-                            child: editingEnabled
-                                ? CircleAvatar(
-                              radius: size.height * 0.11,
-                              backgroundImage: ImageFile == null
-                                  ? null
-                                  : FileImage(
-                                  File(ImageFile!.path)),
-                            )
-                                : CircleAvatar(
-                              radius: size.height * 0.11,
-                              backgroundImage: user.photourl == ''
-                                  ? null
-                                  : NetworkImage(user.photourl),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Center(
-                          child: Container(
-                              child: editingEnabled
-                                  ? ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 5,
+                      width: double.infinity,
+                      height: double.infinity,
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Theme.of(context).colorScheme.primary,
+                          Theme.of(context).colorScheme.secondary
+                        ],
+                      )),
+                      child: SingleChildScrollView(
+                        child: Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: size.height / 6,
+                              ),
+                              Center(
+                                child: Material(
+                                  elevation: 4,
+                                  shape: CircleBorder(
+                                    side: BorderSide.none,
+                                  ),
+                                  child: editingEnabled
+                                      ? CircleAvatar(
+                                          radius: size.height * 0.11,
+                                          backgroundImage: ImageFile == null
+                                              ? null
+                                              : FileImage(
+                                                  File(ImageFile!.path)),
+                                        )
+                                      : CircleAvatar(
+                                          radius: size.height * 0.11,
+                                          backgroundImage: user.photourl == ''
+                                              ? null
+                                              : NetworkImage(user.photourl),
+                                        ),
                                 ),
-                                onPressed: () {
-                                  getImagefromGallery();
-                                },
-                                icon: Icon(Icons.upload),
-                                label: Text('Upload Image'),
-                              )
-                                  : null),
-                        ),
-                        SizedBox(
-                          height: 25,
-                        ),
-                        Container(
-                          child: Card(
-                            elevation: 10,
-                            margin: const EdgeInsets.only(
-                                left: 16, right: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Container(
-                              margin: EdgeInsets.only(
-                                  left: 24,
-                                  right: 24,
-                                  top: 24,
-                                  bottom: 16),
-                              child: Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceAround,
-                                children: [
-                                  Text(
-                                    'Name',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline2,
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  TextFormField(
-                                    enabled: editingEnabled,
-                                    controller: _name,
-                                    decoration: InputDecoration(
-                                        hintText: user.name,
-                                        focusColor: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary)),
-                                        enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Colors.grey,
-                                            )),
-                                        disabledBorder:
-                                        OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.grey))),
-                                  ),
-                                  SizedBox(
-                                    height: 15,
-                                  ),
-                                  Text(
-                                    'Email',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline2,
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  TextFormField(
-                                    enabled: false,
-                                    decoration: InputDecoration(
-                                        hintText: user.email,
-                                        focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary)),
-                                        enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Colors.grey,
-                                            )),
-                                        disabledBorder:
-                                        OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.grey))),
-                                  ),
-                                  SizedBox(
-                                    height: 15,
-                                  ),
-                                  Container(
-                                    width: double.infinity,
+                              ),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              Center(
+                                child: Container(
                                     child: editingEnabled
-                                        ? ElevatedButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          editingEnabled = false;
-                                        });
-                                      },
-                                      child: Text('Cancel'),
-                                      style:
-                                      ElevatedButton.styleFrom(
-                                          backgroundColor:
-                                          Colors.red),
-                                    )
-                                        : ElevatedButton.icon(
-                                      style:
-                                      ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.red,
-                                        elevation: 5,
-                                      ),
-                                      onPressed: () => FirebaseAuth
-                                          .instance
-                                          .signOut()
-                                          .then((value) {
-                                        Navigator.of(context)
-                                            .pop();
-                                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen()));}),
-                                      icon: const Icon(
-                                        Icons.exit_to_app,
-                                        color: Colors.white,
-                                      ),
-                                      label: Text(
-                                        'Log Out',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline3,
-                                      ),
+                                        ? ElevatedButton.icon(
+                                            style: ElevatedButton.styleFrom(
+                                              elevation: 5,
+                                            ),
+                                            onPressed: () {
+                                              getImagefromGallery();
+                                            },
+                                            icon: Icon(Icons.upload),
+                                            label: Text('Upload Image'),
+                                          )
+                                        : null),
+                              ),
+                              SizedBox(
+                                height: 25,
+                              ),
+                              Container(
+                                child: Card(
+                                  elevation: 10,
+                                  margin: const EdgeInsets.only(
+                                      left: 16, right: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Container(
+                                    margin: EdgeInsets.only(
+                                        left: 24,
+                                        right: 24,
+                                        top: 24,
+                                        bottom: 16),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Text(
+                                          'Name',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall,
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        TextFormField(
+                                          enabled: editingEnabled,
+                                          controller: _name,
+                                          decoration: InputDecoration(
+                                              hintText: user.name,
+                                              focusColor: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              focusedBorder: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary)),
+                                              enabledBorder: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                color: Colors.grey,
+                                              )),
+                                              disabledBorder:
+                                                  OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color: Colors.grey))),
+                                        ),
+                                        SizedBox(
+                                          height: 15,
+                                        ),
+                                        Text(
+                                          'Email',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall,
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        TextFormField(
+                                          enabled: false,
+                                          decoration: InputDecoration(
+                                              hintText: user.email,
+                                              focusedBorder: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary)),
+                                              enabledBorder: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                color: Colors.grey,
+                                              )),
+                                              disabledBorder:
+                                                  OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color: Colors.grey))),
+                                        ),
+                                        SizedBox(
+                                          height: 15,
+                                        ),
+                                        Container(
+                                          width: double.infinity,
+                                          child: editingEnabled
+                                              ? ElevatedButton(
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      editingEnabled = false;
+                                                    });
+                                                  },
+                                                  child: Text('Cancel'),
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              Colors.red),
+                                                )
+                                              : ElevatedButton.icon(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    backgroundColor: Colors.red,
+                                                    elevation: 5,
+                                                  ),
+                                                  onPressed: () => FirebaseAuth
+                                                      .instance
+                                                      .signOut()
+                                                      .then((value) {
+                                                    Navigator.of(context).pop();
+                                                    Navigator.of(context)
+                                                        .pushReplacement(
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        LoginScreen()));
+                                                  }),
+                                                  icon: const Icon(
+                                                    Icons.exit_to_app,
+                                                    color: Colors.white,
+                                                  ),
+                                                  label: Text(
+                                                    'Log Out',
+                                                    style: TextStyle(fontSize: 18,color: Colors.white)
+                                                  ),
+                                                ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
+                                ),
+                              )
+                            ],
                           ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              );
+                        ),
+                      ),
+                    );
             } else {
               return Center(
                 child: CircularProgressIndicator(),
@@ -275,7 +278,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future updateProfile(String name) async {
-
     await uploadFile();
 
     try {
@@ -284,36 +286,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
             .collection('Users')
             .doc(user1.uid)
             .update({'name': name});
+        user1.updateDisplayName(name);
       }
       if (Urldownload != '') {
         await FirebaseFirestore.instance
             .collection('Users')
             .doc(user1.uid)
             .update({'photourl': Urldownload});
+        user1.updatePhotoURL(Urldownload);
       }
     } on Exception catch (e) {
-      snackbarKey.currentState!.showSnackBar(SnackBar(content: Text(e.toString())));
+      snackbarKey.currentState!
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     }
 
     Navigator.of(context).pop();
     Navigator.of(context).pop();
-    snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('Profile updated')));
-
-
+    snackbarKey.currentState!
+        .showSnackBar(SnackBar(content: Text('Profile updated')));
   }
-
 
   uploadFile() async {
     showDialog(
         context: NavigatorKey.currentContext!,
         barrierDismissible: false,
         builder: (context) => Center(
-          child: CircularProgressIndicator(),
-        ));
+              child: CircularProgressIndicator(),
+            ));
 
-    if(ImageFile == null){
+    if (ImageFile == null) {
       Urldownload = '';
-    }else {
+    } else {
       final path = 'groupImages/${ImageFile!.name}';
       final file = File(ImageFile!.path);
 

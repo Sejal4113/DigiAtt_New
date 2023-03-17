@@ -7,12 +7,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:365535867982:android:ef6889c8a784f89ef33f1f",
+        "mobilesdk_app_id": "1:365535867982:android:fac695c58b3ec1f0f33f1f",
         "android_client_info": {
-          "package_name": "com.example.digiatt"
+          "package_name": "com.example.digiatt_new"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "365535867982-podhnlm3kq7jdpp6neo2uf0sqrr9cvm8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.digiatt_new",
+            "certificate_hash": "b990d53a6a7dcf50f1ac6098e7dc6dc3ef2a4922"
+          }
+        },
         {
           "client_id": "365535867982-id04034a3sfkg0lbluvcbrdsv46vuto8.apps.googleusercontent.com",
           "client_type": 3

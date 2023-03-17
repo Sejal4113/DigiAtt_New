@@ -42,13 +42,13 @@ class _LoginScreenState extends State<LoginScreen> {
           height: size.height,
           decoration: BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.secondary
-                ],
-              )),
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Theme.of(context).colorScheme.primary,
+              Theme.of(context).colorScheme.secondary
+            ],
+          )),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -57,7 +57,11 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               Text(
                 'Login',
-                style: Theme.of(context).textTheme.headline4,
+                style: TextStyle(
+                    fontSize: size.height * 0.07,
+                    fontFamily: 'Inter',
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600),
               ),
               SizedBox(
                 height: size.height / 10,
@@ -78,10 +82,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             Padding(
                               padding:
-                              const EdgeInsets.only(top: 7, left: 10.0),
+                                  const EdgeInsets.only(top: 7, left: 10.0),
                               child: Text(
                                 'Username',
-                                style: Theme.of(context).textTheme.headline2,
+                                style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16),
                               ),
                             ),
                             TextField(
@@ -89,17 +93,17 @@ class _LoginScreenState extends State<LoginScreen> {
                               controller: _email,
                               decoration: InputDecoration(
                                   focusColor:
-                                  Theme.of(context).colorScheme.primary,
+                                      Theme.of(context).colorScheme.primary,
                                   hintText: 'Enter Email',
                                   prefixIcon: Icon(Icons.email_rounded),
                                   hintStyle: TextStyle(fontSize: 12)),
                             ),
                             Padding(
                               padding:
-                              const EdgeInsets.only(top: 13, left: 10.0),
+                                  const EdgeInsets.only(top: 13, left: 10.0),
                               child: Text(
                                 'Password',
-                                style: Theme.of(context).textTheme.headline2,
+                                style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16),
                               ),
                             ),
                             TextField(
@@ -107,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 obscureText: !isVisible,
                                 decoration: InputDecoration(
                                   focusColor:
-                                  Theme.of(context).colorScheme.primary,
+                                      Theme.of(context).colorScheme.primary,
                                   hintText: 'Enter your password',
                                   prefixIcon: Icon(Icons.lock_outline),
                                   hintStyle: TextStyle(fontSize: 12),
@@ -129,13 +133,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               children: [
                                 InkWell(
                                   onTap: () {
-                                    // TODO Create password reset page
-                                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => ForgotPasswordScreen()));
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ForgotPasswordScreen()));
                                   },
                                   child: Text(
                                     'Forgot Password?',
                                     style:
-                                    Theme.of(context).textTheme.subtitle2,
+                                        Theme.of(context).textTheme.titleSmall,
                                   ),
                                 ),
                               ],
@@ -151,8 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     shape: MaterialStateProperty.all(
                                         RoundedRectangleBorder(
                                             borderRadius:
-                                            BorderRadius.circular(20))),
-
+                                                BorderRadius.circular(20))),
                                   ),
                                   onPressed: () {
                                     Login(_email.text.trim(),
@@ -161,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: Text(
                                     'Login',
                                     style:
-                                    Theme.of(context).textTheme.headline3,
+                                        TextStyle(fontSize: 20,),
                                   )),
                             ),
                             SizedBox(
@@ -205,34 +210,36 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 height: size.height / 15,
               ),
-
-
             ],
           ),
         ),
       ),
     );
   }
+
   Future Login(String email, String password) async {
     showDialog(
         context: NavigatorKey.currentContext!,
         barrierDismissible: false,
         builder: (context) => Center(
-          child: CircularProgressIndicator(),
-        ));
+              child: CircularProgressIndicator(),
+            ));
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      ).then((value) => {
-        Navigator.of(context).pop(),
-        NavigatorKey.currentState!.pushReplacement(MaterialPageRoute(builder: (context)=> VerifyEmailScreen()))
-      });
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+            email: email,
+            password: password,
+          )
+          .then((value) => {
+                Navigator.of(context).pop(),
+                NavigatorKey.currentState!.pushReplacement(MaterialPageRoute(
+                    builder: (context) => VerifyEmailScreen()))
+              });
     } on FirebaseAuthException catch (e) {
-      snackbarKey.currentState?.showSnackBar(SnackBar(content: Text(e.message!)));
+      snackbarKey.currentState
+          ?.showSnackBar(SnackBar(content: Text(e.message!)));
       Navigator.of(context).pop();
     }
-
   }
 }
