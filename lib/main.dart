@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
             // Define the default brightness and colors.
             colorScheme: ColorScheme.fromSwatch().copyWith(
               primary: const Color(0xFF2F58CA),
-              primaryContainer: const Color(0xCC2F58CA),
+              primaryContainer: Colors.blueAccent,
               secondary: const Color(0xFF4E31AA),
             ),
 
@@ -51,3 +51,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+

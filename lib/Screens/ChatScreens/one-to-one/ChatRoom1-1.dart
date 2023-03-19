@@ -42,7 +42,7 @@ class ChatRoom extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              height: size.height / 1.25,
+              height: size.height / 1.23,
               width: size.width,
               child: StreamBuilder<QuerySnapshot>(
                 stream: ReadChats(),
@@ -63,24 +63,24 @@ class ChatRoom extends StatelessWidget {
               ),
             ),
             Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: TextFormField(
-                      controller: _message,
-                      decoration: InputDecoration(
-                        hintText: 'Send Message',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25),
-                            borderSide: BorderSide(color: Colors.white)),
-                        suffixIcon: IconButton(
-                            onPressed: onSendMessage, icon: Icon(Icons.send)),
-                        filled: true,
-                        fillColor: Colors.white,
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: TextFormField(
+                        controller: _message,
+                        decoration: InputDecoration(
+                          hintText: 'Send Message',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: BorderSide(color: Colors.white)),
+                          suffixIcon: IconButton(
+                              onPressed: onSendMessage, icon: Icon(Icons.send)),
+                          filled: true,
+                          fillColor: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
           ],
         ),
       ),
@@ -97,15 +97,13 @@ class ChatRoom extends StatelessWidget {
         width: size.width / 1.5,
         child: map['sendby'] == CUser.name
             ? Card(
-          elevation: 3,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15),bottomRight: Radius.circular(15),topLeft: Radius.circular(15))),
+          elevation: 5,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10))),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(vertical: 16.0,horizontal: 8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(map['sendby'], style: TextStyle(color: Colors.purpleAccent,fontWeight: FontWeight.w700,fontSize: 16)),
-                SizedBox(height: 5,),
                 Text(
                   map['message'],
                   style: TextStyle(fontSize: 15, color: Colors.white),
@@ -118,14 +116,12 @@ class ChatRoom extends StatelessWidget {
         )
             : Card(
           elevation: 3,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15),bottomRight: Radius.circular(15),topRight: Radius.circular(15))),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10),bottomRight: Radius.circular(10),topRight: Radius.circular(10))),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(vertical: 14.0,horizontal: 8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(map['sendby'], style: TextStyle(color: Colors.pinkAccent,fontWeight: FontWeight.w700,fontSize: 16)),
-                SizedBox(height: 5,),
                 Text(
                   map['message'],
                   style: TextStyle(fontSize: 15, color: Colors.white),
@@ -133,7 +129,7 @@ class ChatRoom extends StatelessWidget {
               ],
             ),
           ),
-          margin: EdgeInsets.symmetric(vertical: 2,horizontal: 5),
+          margin: EdgeInsets.symmetric(vertical: 3,horizontal: 5),
           color: Theme.of(context).colorScheme.primaryContainer,
         ),
       ),
