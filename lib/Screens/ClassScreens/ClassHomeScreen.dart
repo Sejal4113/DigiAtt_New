@@ -12,18 +12,20 @@ import 'ClassParticipantScreen.dart';
 
 class ClassHomeScreen extends StatefulWidget {
   ClassModel classData;
+  UserModel userModel;
 
-  ClassHomeScreen({Key? key, required this.classData}) : super(key: key);
+  ClassHomeScreen({Key? key, required this.classData,required this.userModel}) : super(key: key);
 
   @override
-  State<ClassHomeScreen> createState() => _ClassHomeScreenState(classData);
+  State<ClassHomeScreen> createState() => _ClassHomeScreenState(classData,userModel);
 }
 
 class _ClassHomeScreenState extends State<ClassHomeScreen> {
   var classData;
+  var userModel;
   int index = 0;
 
-  _ClassHomeScreenState(this.classData);
+  _ClassHomeScreenState(this.classData,this.userModel);
 
   var cUser = FirebaseAuth.instance.currentUser!;
 
@@ -34,7 +36,7 @@ class _ClassHomeScreenState extends State<ClassHomeScreen> {
           title: Text(classData.name),
           actions: [
             IconButton(onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChatHomeScreen(classData: classData,)));
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChatHomeScreen(classData: classData, userdata: userModel,)));
             }, icon: Icon(Icons.messenger_rounded)),
           ],
         ),

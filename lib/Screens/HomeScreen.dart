@@ -25,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   var _code = TextEditingController();
   var snap;
+  var userdata;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ?.showSnackBar(SnackBar(content: Text('Something went wrong')));
           } else if (snapshot.hasData) {
             var user1 = snapshot.data;
+            userdata = user1;
 
             return user1 == null
                 ? const Center(
@@ -119,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget buildClass(ClassModel user) => Card(
         child: ListTile(
           onTap: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => ClassHomeScreen(classData: user))),
+              builder: (context) => ClassHomeScreen(classData: user,userModel: userdata, ))),
           leading: user.photourl == ''
               ? CircleAvatar(
                   backgroundColor: Colors.grey.withOpacity(0.5),
