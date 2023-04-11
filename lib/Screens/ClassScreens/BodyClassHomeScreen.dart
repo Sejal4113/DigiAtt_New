@@ -32,7 +32,7 @@ class _BodyClassHomeScreenState extends State<BodyClassHomeScreen> {
     'Python'
   ];
   DateTime Date = DateTime.now();
-  TimeOfDay time = TimeOfDay(hour: 10, minute: 30);
+  TimeOfDay time = TimeOfDay.now();
   var initialvalue;
 
   _BodyClassHomeScreenState(this.classModel);
@@ -64,7 +64,10 @@ class _BodyClassHomeScreenState extends State<BodyClassHomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: size.height *0.05,),
+                    SizedBox(height: size.height*0.01,),
+                    Text('Download Attendance data',style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
+                    new Divider(thickness: 2,),
+                    SizedBox(height: size.height *0.03,),
                     Form(
                       key: FormKey,
                       child: DropdownButtonFormField(
@@ -85,7 +88,7 @@ class _BodyClassHomeScreenState extends State<BodyClassHomeScreen> {
                         },
                       ),
                     ),
-                    SizedBox(height: size.height *0.05,),
+                    SizedBox(height: size.height *0.02,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -113,7 +116,7 @@ class _BodyClassHomeScreenState extends State<BodyClassHomeScreen> {
                         ),
                       ],
                     ),
-                    SizedBox(height: size.height *0.05,),
+                    SizedBox(height: size.height *0.02,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -141,18 +144,33 @@ class _BodyClassHomeScreenState extends State<BodyClassHomeScreen> {
                       ],
                     ),
                     SizedBox(height: size.height *0.1,),
-                    ElevatedButton(
-                        onPressed: () {
-                          if(FormKey.currentState!.validate()){
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => TakeAttendance(classModel: classModel, userModel: usermodel)));
-                          }
-                        },
-                        child: usermodel.role == 'teacher'
-                            ? Text('Take Attendance')
-                            : Text('Give Attendance')),
-                    TextFormField(
-                      initialValue: usermodel.name,
-                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            margin: EdgeInsets.all(8),
+                              child:ElevatedButton(onPressed: () {
+                              if(FormKey.currentState!.validate()){
+                                snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('works')));
+                              }
+                                  }, child: Text('Download record'))),
+                        ),
+                        Expanded(
+                          child: Container(
+                            margin: EdgeInsets.all(8),
+                            child:ElevatedButton(
+                                  onPressed: () {
+                                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => TakeAttendance(classModel: classModel, userModel: usermodel)));
+
+                                  },
+                                  child: usermodel.role == 'teacher'
+                                      ? Text('Take Attendance')
+                                      : Text('Give Attendance')),
+                            ),
+                        ),
+                      ],
+                    )
+
                   ],
                 ),
               ),

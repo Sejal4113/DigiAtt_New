@@ -85,7 +85,7 @@ class _ClassHomeScreenState extends State<ClassHomeScreen> {
 
       case 1:
         return ClassAssignmentScreen(
-          classModel: classData,
+          classModel: classData, userModel: userModel,
         );
         break;
       case 2:
