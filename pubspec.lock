@@ -238,6 +238,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_file_downloader:
+    dependency: "direct main"
+    description:
+      name: flutter_file_downloader
+      sha256: "55be61a6bde21ec6225f220f0ba38ab58b925c082f522dab8238e9ef0c2ed19a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0+1"
   flutter_lints:
     dependency: "direct dev"
     description:

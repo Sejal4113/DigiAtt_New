@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:digiatt_new/Screens/AttendanceResult.dart';
 import 'package:digiatt_new/Screens/TakeAttendance.dart';
 import 'package:digiatt_new/main.dart';
 import 'package:digiatt_new/methods/CLassModel.dart';
@@ -149,8 +150,21 @@ class _BodyClassHomeScreenState extends State<BodyClassHomeScreen> {
                         Expanded(
                           child: Container(
                             margin: EdgeInsets.all(8),
-                              child:ElevatedButton(onPressed: () {
+                              child:ElevatedButton(onPressed: () async {
                               if(FormKey.currentState!.validate()){
+                                String date = "${Date.day}/${Date.month}/${Date.year}";
+                                String time1 = "${time.hour} : ${time.minute}";
+                                String attend_id = initialvalue+'-'+Date.day.toString()+'-'+Date.month.toString()+'-'+Date.year.toString()+'-'+time.hour.toString()+'-'+time.minute.toString();
+                                var map = {
+                                  'subject' : initialvalue,
+                                  'date' : date,
+                                  'time' : time1,
+                                  'id' : attend_id
+                                };
+                                var reference = await FirebaseFirestore.instance.collection('Classes').doc(classModel.id).collection('Attendance').doc(attend_id).get();
+                                 if(reference.exists) {
+                                   Navigator.of(context).push(MaterialPageRoute(builder: (context) => AttendanceResult(attend_data: map,)));
+                                 }
                                 snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('works')));
                               }
                                   }, child: Text('Download record'))),

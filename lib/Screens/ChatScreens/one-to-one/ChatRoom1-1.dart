@@ -88,6 +88,7 @@ class ChatRoom extends StatelessWidget {
   }
 
   Widget messages(Size size, Map<String, dynamic> map, BuildContext context) {
+    DateTime Date = map['time'];
     return Container(
       width: size.width / 2,
       alignment: map['sendby'] == CUser.name
@@ -108,6 +109,7 @@ class ChatRoom extends StatelessWidget {
                   map['message'],
                   style: TextStyle(fontSize: 15, color: Colors.white),
                 ),
+                Text(Date.day.toString()),
               ],
             ),
           ),

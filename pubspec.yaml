@@ -49,6 +49,7 @@ dependencies:
   google_sign_in: ^5.4.2
   to_csv: ^1.1.1
   file_picker: ^5.2.7
+  flutter_file_downloader: ^1.1.0
 
 dev_dependencies:
   flutter_test:
