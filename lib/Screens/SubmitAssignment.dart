@@ -14,10 +14,16 @@ class SubmitAssignment extends StatefulWidget {
   var assign_data;
   var userModel;
   var ClassModel;
-  SubmitAssignment({Key? key,required this.assign_data,required this.userModel,required this.ClassModel}) : super(key: key);
+  SubmitAssignment(
+      {Key? key,
+      required this.assign_data,
+      required this.userModel,
+      required this.ClassModel})
+      : super(key: key);
 
   @override
-  State<SubmitAssignment> createState() => _SubmitAssignmentState(assign_data,userModel,ClassModel);
+  State<SubmitAssignment> createState() =>
+      _SubmitAssignmentState(assign_data, userModel, ClassModel);
 }
 
 class _SubmitAssignmentState extends State<SubmitAssignment> {
@@ -26,118 +32,203 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
   var ClassModel;
   var user = FirebaseAuth.instance.currentUser!.uid;
 
-  _SubmitAssignmentState(this.assign_data,this.userModel,this.ClassModel);
+  _SubmitAssignmentState(this.assign_data, this.userModel, this.ClassModel);
 
   File? file;
-  var urlDownload;
   UploadTask? task;
   String filename = 'File not Selected';
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(assign_data['title']),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 10,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Description',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                Text('End Date :  '+assign_data['end_date']),
-              ],
-            ),
-            Divider(),
-            SizedBox(height: 10,),
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0,bottom: 8,left: 16,right: 16),
-              child: Text(assign_data['description']),
-            ),
-            SizedBox(height: 20,),
-            Divider(),
-            Text('Attached Files:', style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-            assign_data['file_name'] == 'File Not Selected' ? Container() : InkWell(
-              onTap: () {
-                //You can download a single file
-                FileDownloader.downloadFile(
-                    url: assign_data['file_path'],
-                    name: assign_data['file_name'],
-                    onProgress: (String? Filename, double progress) {
-                    },
-                    onDownloadCompleted: (String path) {
-                      snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('Download Completed. check ${path}')));
-                    },
-                    onDownloadError: (String error) {
-                      snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('Error : ${error}')));
-                    });
-              },
-              child: Card(
-                child: Row(
-                  children: [
-                    Icon(Icons.file_copy_rounded),
-
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(assign_data['file_name']),
-                    )
-                  ],
-                ),
-              ),
-            ),
-
-            SizedBox(height: 20,),
-            file == null ? Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text('No file Selected'),
-            ) : Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(filename),
-            ),
-
-            SizedBox(height: 20,),
-            Row(
-              children: [
-                Expanded(child: Container(margin: EdgeInsets.all(20),child: ElevatedButton(onPressed: () {
-                  selectFiles();
-                }, child: Text('Attach Files')))),
-              ],
-            ),
-            task != null ?  buildUploadStatus(task!) : Container(),
-
-            Row(
-              children: [
-                Expanded(child: Container(child: ElevatedButton(onPressed: () {
-                  uploadFile();
-
-                  var map = {
-                    'name' : userModel.name,
-                    'email' : userModel.email,
-                    'id' : user,
-                    'url' : urlDownload,
-                  };
-                  var ref = FirebaseFirestore.instance.collection('Classes').doc(ClassModel.id).collection('Assignments').doc(assign_data['id'].toString()).collection('Submission').doc(user);
-
-                  ref.set(map).then((value) {
-                    snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('Assignment submitted')));
-                    Navigator.pop(context);});
-                }, child: Text('Submit Assignment')))),
-              ],
-            ),
-
-          ],
+        appBar: AppBar(
+          title: Text(assign_data['title']),
         ),
-      ),
-    );
+        body: FutureBuilder(
+            future: isDocumentExists(),
+            builder: (context, snap) {
+              if (snap.hasData) {
+                if(snap.data!){
+                  var data = snap.data!.data();
+                  return Text(data!['name']);
+                }
+                  return Padding(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 10,
+                            ),
+                            (assign_data['description'] == '')
+                                ? Container()
+                                : Container(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Description',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Divider(),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 8.0,
+                                        bottom: 8,
+                                        left: 16,
+                                        right: 16),
+                                    child: Text(assign_data['description']),
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            assign_data['file_name'] == 'File not Selected'
+                                ? Container()
+                                : Container(
+                              child: Column(
+                                children: [
+                                  Divider(),
+                                  Text(
+                                    'Attached Files:',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  ListTile(
+                                    leading: Icon(Icons.picture_as_pdf),
+                                    title: Text(assign_data['file_name']),
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Attachments',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                          'End Date :  ' + assign_data['end_date']),
+                                    ],
+                                  ),
+                                  new Divider(),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  file == null
+                                      ? Container(
+                                    child: Text('No Attached Files'),
+                                  )
+                                      : Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                        BorderRadius.circular(11),
+                                        border:
+                                        Border.all(color: Colors.black)),
+                                    child: ListTile(
+                                      leading: CircleAvatar(
+                                        child: Icon(Icons.book_rounded),
+                                      ),
+                                      title: Text(filename),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                    child: Container(
+                                        child: ElevatedButton(
+                                            onPressed: file == null
+                                                ? () {
+                                              selectFiles();
+                                            }
+                                                : null,
+                                            child: Text('Attach Files')))),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                    child: Container(
+                                        child: ElevatedButton(
+                                            onPressed: task != null
+                                                ? null
+                                                : () {
+                                              uploadFile().then((value) {
+                                                var map = {
+                                                  'name': userModel.name,
+                                                  'email': userModel.email,
+                                                  'id': user,
+                                                  'url': value,
+                                                };
+                                                var ref = FirebaseFirestore
+                                                    .instance
+                                                    .collection('Classes')
+                                                    .doc(ClassModel.id)
+                                                    .collection('Assignments')
+                                                    .doc(assign_data['id']
+                                                    .toString())
+                                                    .collection('Submission')
+                                                    .doc(user);
+
+                                                ref.set(map).then((value) {
+                                                  snackbarKey.currentState!
+                                                      .showSnackBar(SnackBar(
+                                                      content: Text(
+                                                          'Assignment submitted')));
+                                                  Navigator.pop(context);
+                                                });
+                                              });
+                                            },
+                                            child: Text('Submit Assignment')))),
+                              ],
+                            ),
+                            task != null ? buildUploadStatus(task!) : Container(),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+              }
+              return Container(child: CircularProgressIndicator(),);
+
+            }));
   }
-  Future selectFiles() async{
+
+  Future selectFiles() async {
     final result = await FilePicker.platform.pickFiles(allowMultiple: false);
 
-    if(result == null) return;
+    if (result == null) return;
     final path = result.files.single.path!;
     setState(() {
       file = File(path);
@@ -145,36 +236,53 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
     });
   }
 
-  Future uploadFile() async{
-    if(file == null) return;
+  Future uploadFile() async {
+    if (file == null) return;
 
     final destination = 'files/${user}/${filename}';
 
     task = FirebaseApi.uploadFile(destination, file!);
-    setState(() {
+    setState(() {});
 
-    });
-
-    if(task == null) return;
+    if (task == null) return;
 
     final snapshot = await task!.whenComplete(() {});
-    urlDownload = await snapshot.ref.getDownloadURL();
-
-
+    String urlDownload = await snapshot.ref.getDownloadURL();
+    return urlDownload;
   }
 
-  Widget buildUploadStatus(UploadTask uploadTask) => StreamBuilder<TaskSnapshot>(
-    stream: task?.snapshotEvents,
-    builder: (context,snapshot) {
-      if(snapshot.hasData) {
-        final snap = snapshot.data!;
-        final progress =snap.bytesTransferred / snap.totalBytes;
-        final percent = (progress * 100).toStringAsFixed(2);
+  Widget buildUploadStatus(UploadTask uploadTask) =>
+      StreamBuilder<TaskSnapshot>(
+        stream: task?.snapshotEvents,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final snap = snapshot.data!;
+            final progress = snap.bytesTransferred / snap.totalBytes;
 
-        return Center(child: Text('${percent} %', style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),));
-      }else{
-        return Container();
-      }
-    },
-  );
+            return Center(
+                child: LinearProgressIndicator(
+              value: progress,
+            ));
+          } else {
+            return Container();
+          }
+        },
+      );
+
+  Future isDocumentExists() async {
+    DocumentSnapshot<Map<String,dynamic>> doc = await FirebaseFirestore.instance
+        .collection('Classes')
+        .doc(ClassModel.id)
+        .collection('Assignments')
+        .doc(assign_data['id'])
+        .collection('Submission')
+        .doc(user)
+        .get();
+
+    if(doc.exists){
+      return true;
+    }else{
+      return false;
+    }
+  }
 }

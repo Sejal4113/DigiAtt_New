@@ -46,71 +46,13 @@ class _ClassAssignmentScreenState extends State<ClassAssignmentScreen> {
                       itemBuilder: (context, index) {
                         var data = snapshots.data!.docs[index].data() as Map<String, dynamic>;
                         
-                        return Card(
-                          child: Container(
-                            margin: EdgeInsets.all(20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(data['title'] , style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
-                                    Text('End Date : ${data['end_date']}',style: TextStyle(fontSize: 12),)
-                                  ],
-                                ),
-                                SizedBox(height: 5,),
-                                Divider(),
-                                Text('Instructions',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: data['description'] == '' ?  Text('No instructions'):Text(data['description']),
-                                ),
-                                SizedBox(height: 5,),
-                                (data['file_name'] == 'File not Selected') ? Container() :InkWell(
-                                  onTap: () {
-                                    //You can download a single file
-                                    FileDownloader.downloadFile(
-                                        url: data['file_path'],
-                                        name: data['file_name'],
-                                        onProgress: (String? Filename, double progress) {
-                                        },
-                                        onDownloadCompleted: (String path) {
-                                          snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('Download Completed. check ${path}')));
-                                        },
-                                        onDownloadError: (String error) {
-                                          snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('Error : ${error}')));
-                                        });
-                                  },
-                                  child: Card(
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.file_copy_rounded),
-
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(data['file_name']),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Divider(),
-                                Row(
-                                  children: [
-                                    Expanded(child: ElevatedButton(onPressed: () {
-                                      if(userModel.role == 'student')  {
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => SubmitAssignment(assign_data: data, userModel: userModel, ClassModel: classModel)));
-                                      }else{
-
-                                      }
-                                    }, child: userModel.role == 'teacher' ? Text('View Assignment') : Text('Submit Assignment'))),
-                                  ],
-                                )
-                              ],
-                            ),
+                        return ListTile(
+                          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => SubmitAssignment(assign_data: data, userModel: userModel, ClassModel: classModel))),
+                          leading: CircleAvatar(
+                            child: Icon(Icons.book),
                           ),
-                          
+                          title: Text(data['title']),
+                          subtitle: Text(data['end_date']),
                         );
                       },
                       itemCount: snapshots.data!.docs.length);
