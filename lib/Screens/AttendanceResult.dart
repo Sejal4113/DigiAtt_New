@@ -5,7 +5,7 @@ import 'package:to_csv/to_csv.dart' as exportCSV;
 class AttendanceResult extends StatefulWidget {
   var attend_data;
   var classModel;
-  AttendanceResult({Key? key, required this.attend_data, this.classModel})
+  AttendanceResult({Key? key, required this.attend_data, required this.classModel})
       : super(key: key);
 
   @override

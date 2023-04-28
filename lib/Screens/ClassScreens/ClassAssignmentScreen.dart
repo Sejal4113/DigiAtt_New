@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 
 import '../../methods/CLassModel.dart';
+import '../CheckAssignment.dart';
 import '../SubmitAssignment.dart';
 
 class ClassAssignmentScreen extends StatefulWidget {
@@ -38,24 +39,39 @@ class _ClassAssignmentScreenState extends State<ClassAssignmentScreen> {
                 .collection('Assignments')
                 .snapshots(),
             builder: (context, snapshots) {
-              return snapshots.connectionState == ConnectionState.waiting
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : ListView.builder(
-                      itemBuilder: (context, index) {
-                        var data = snapshots.data!.docs[index].data() as Map<String, dynamic>;
-                        
-                        return ListTile(
-                          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => SubmitAssignment(assign_data: data, userModel: userModel, ClassModel: classModel))),
-                          leading: CircleAvatar(
-                            child: Icon(Icons.book),
-                          ),
-                          title: Text(data['title']),
-                          subtitle: Text(data['end_date']),
-                        );
-                      },
-                      itemCount: snapshots.data!.docs.length);
+              if(snapshots.hasData) {
+                return snapshots.connectionState == ConnectionState.waiting
+                    ? Center(
+                  child: CircularProgressIndicator(),
+                )
+                    : ListView.builder(
+                    itemBuilder: (context, index) {
+                      var data = snapshots.data!.docs[index].data() as Map<
+                          String,
+                          dynamic>;
+
+                      return ListTile(
+                        onTap: () => !
+                        (userModel.role == 'teacher') ? Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) =>
+                                SubmitAssignment(assign_data: data,
+                                    userModel: userModel,
+                                    ClassModel: classModel))) : Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) =>
+                                CheckAssignment(assign_data: data,
+                                    userModel: userModel,
+                                   classModel: classModel,))),//TODO work the teacher side of assignment
+                        leading: CircleAvatar(
+                          child: Icon(Icons.book),
+                        ),
+                        title: Text(data['title']),
+                        subtitle: Text("End Date : "+data['end_date']),
+                      );
+                    },
+                    itemCount: snapshots.data!.docs.length);
+              }else{
+                return Center(child: Text('No Assignments assigned'),);
+              }
             });
       }),
       floatingActionButton: userModel.role == 'teacher'

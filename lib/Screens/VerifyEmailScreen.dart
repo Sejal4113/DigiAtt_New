@@ -133,11 +133,11 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   onPressed: canResend ? sendVerificationlink : null,
                   child: Text(
                     'Send Link Again',
-                    style: Theme.of(context).textTheme.headline3,
+                    style: TextStyle(color: Colors.white, fontSize: 15),
                   ),
                   style: ElevatedButton.styleFrom(
-                      elevation: 5,
-                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      elevation: 10,
+                      backgroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),

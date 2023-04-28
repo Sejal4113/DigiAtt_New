@@ -49,6 +49,7 @@ class ChatRoom extends StatelessWidget {
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.data != null) {
                     return ListView.builder(
+                      reverse: true,
                         itemCount: snapshot.data?.docs.length,
                         itemBuilder: (context, index) {
                           Map<String, dynamic> map = snapshot.data?.docs[index]
@@ -69,6 +70,7 @@ class ChatRoom extends StatelessWidget {
                     ),
                     child: TextFormField(
                         controller: _message,
+                        // initialValue: DateTime.now().toString(),
                         decoration: InputDecoration(
                           hintText: 'Send Message',
                           border: OutlineInputBorder(
@@ -88,7 +90,8 @@ class ChatRoom extends StatelessWidget {
   }
 
   Widget messages(Size size, Map<String, dynamic> map, BuildContext context) {
-    DateTime Date = map['time'];
+    // Timestamp Date = map['time'];
+    DateTime Date = (map['time'] as Timestamp).toDate();
     return Container(
       width: size.width / 2,
       alignment: map['sendby'] == CUser.name
@@ -107,9 +110,9 @@ class ChatRoom extends StatelessWidget {
               children: [
                 Text(
                   map['message'],
-                  style: TextStyle(fontSize: 15, color: Colors.white),
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
-                Text(Date.day.toString()),
+                Align(alignment: Alignment.bottomRight,child: Text(Date.hour.toString()+ ' : '+ Date.minute.toString(),style: TextStyle(fontSize: 11,color: Colors.white),)),
               ],
             ),
           ),
@@ -158,7 +161,7 @@ class ChatRoom extends StatelessWidget {
       Map<String, dynamic> messages = {
         'sendby': CUser.name,
         'message': _message.text,
-        'time': FieldValue.serverTimestamp(),
+        'time': DateTime.now(),
       };
 
       await firestore

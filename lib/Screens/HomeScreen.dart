@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
             stream: readClass(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: Text('Loading...'));
+                return Container();
               } else if (snapshot.hasError) {
                 return Container(
                   child: Center(

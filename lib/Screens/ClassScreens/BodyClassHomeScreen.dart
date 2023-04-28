@@ -163,9 +163,11 @@ class _BodyClassHomeScreenState extends State<BodyClassHomeScreen> {
                                 };
                                 var reference = await FirebaseFirestore.instance.collection('Classes').doc(classModel.id).collection('Attendance').doc(attend_id).get();
                                  if(reference.exists) {
-                                   Navigator.of(context).push(MaterialPageRoute(builder: (context) => AttendanceResult(attend_data: map,)));
+                                   Navigator.of(context).push(MaterialPageRoute(builder: (context) => AttendanceResult(attend_data: map, classModel: classModel,)));
+                                 }else{
+                                   snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('Attendance record not found')));
                                  }
-                                snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('works')));
+                                // snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('works')));
                               }
                                   }, child: Text('Download record'))),
                         ),
