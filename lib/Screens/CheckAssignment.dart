@@ -39,7 +39,7 @@ class _CheckAssignmentState extends State<CheckAssignment> {
             .collection('Classes')
             .doc(classModel.id)
             .collection("Assignments")
-            .doc(assign_data['id'])
+            .doc(assign_data['id'].toString())
             .collection('Submission')
             .snapshots(),
         builder: (context, snapshots) {
@@ -52,7 +52,7 @@ class _CheckAssignmentState extends State<CheckAssignment> {
                     var data =
                         snapshots.data!.docs[0].data() as Map<String, dynamic>;
                     return ListTile(
-                      leading: Text((index + 1).toString()),
+                      // leading: Text((index + 1).toString()),
                       title: Text(data['name']),
                       subtitle: Text(data['email']),
                       trailing: InkWell(
@@ -78,7 +78,7 @@ class _CheckAssignmentState extends State<CheckAssignment> {
                                 });
                               },
                               onDownloadError: (String error) {
-                                snackbarKey.currentState!.showSnackBar(SnackBar(content: Text(error)));
+                                snackbarKey.currentState!.showSnackBar(SnackBar(content: Text(error.toString())));
                             }
                             );
                           },

@@ -191,8 +191,7 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                     ],
                   ),
                 );
-              }
-
+              }else{
               return Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
@@ -361,6 +360,7 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                   ],
                 ),
               );
+            }
             }));
   }
 
@@ -414,7 +414,7 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
         .collection('Classes')
         .doc(ClassModel.id)
         .collection('Assignments')
-        .doc(assign_data['id'])
+        .doc(assign_data['id'].toString())
         .collection('Submission')
         .doc(user)
         .get();
