@@ -1,17 +1,18 @@
-import 'package:digiatt_new/Screens/ChatScreens/ChatHomeScreen.dart';
-import 'package:digiatt_new/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
 import '../../methods/CLassModel.dart';
 import '../../methods/UserModel.dart';
+import '../ChatScreens/GroupChatScreen.dart';
 import 'BodyClassHomeScreen.dart';
 import 'ClassAssignmentScreen.dart';
 import 'ClassParticipantScreen.dart';
+import 'ClassSettingsScreen.dart';
 
 class ClassHomeScreen extends StatefulWidget {
-  ClassModel classData;
+  var classData;
   UserModel userModel;
 
   ClassHomeScreen({Key? key, required this.classData,required this.userModel}) : super(key: key);
@@ -33,11 +34,15 @@ class _ClassHomeScreenState extends State<ClassHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(classData.name),
+          title: Text(classData['name']),
           actions: [
             IconButton(onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChatHomeScreen(classData: classData, userdata: userModel,)));
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => GroupChatScreen(classModel: classData, userModel: userModel,)));
             }, icon: Icon(Icons.messenger_rounded)),
+            (userModel.role == 'teacher') ?
+            IconButton(onPressed: () {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ClassSettingsScreen(classData: classData,userModel: userModel,)));
+            }, icon: Icon(Icons.settings)) : Container()
           ],
         ),
         body: getPage(index),
@@ -78,20 +83,33 @@ class _ClassHomeScreenState extends State<ClassHomeScreen> {
   Widget? getPage(int index) {
     switch (index) {
       case 0:
-        return BodyClassHomeScreen(
-          classModel: classData,
-        );
+        {
+          setState(() {
+          });
+          return BodyClassHomeScreen(
+            classModel: classData,
+          );
+        }
         break;
 
       case 1:
-        return ClassAssignmentScreen(
-          classModel: classData, userModel: userModel,
-        );
+        {setState(() {
+
+        });
+          return ClassAssignmentScreen(
+            classModel: classData, userModel: userModel,
+          );
+        }
         break;
-      case 2:
+      case 2: {
+        setState(() {
+
+        });
         return ClassParticipantsScreen(
           classModel: classData,
         );
+      }
+
         break;
     }
   }

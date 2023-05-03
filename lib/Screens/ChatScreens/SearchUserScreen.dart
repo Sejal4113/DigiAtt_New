@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import '../../methods/UserModel.dart';
 
 class SearchUserScreen extends StatefulWidget {
-  ClassModel classData;
+  var classData;
   UserModel userModel;
   SearchUserScreen({Key? key, required this.classData,required this.userModel}) : super(key: key);
 
@@ -38,26 +38,30 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Expanded(
-          child: Card(
-            child: TextField(
-              autofocus: true,
-              decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search), hintText: 'Search...',),
-              onChanged: (val) {
-                setState(() {
-                  name = val;
-                });
-              },
-            ),
+        title: Row(
+          children: [
+            Expanded(
+              child: Card(
+                child: TextField(
+                  autofocus: true,
+                  decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.search), hintText: 'Search...',),
+                  onChanged: (val) {
+                    setState(() {
+                      name = val;
+                    });
+                  },
+                ),
 
-          ),
+              ),
+            ),
+          ],
         ),
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('Classes')
-            .doc(classData.id)
+            .doc(classData['id'])
             .collection('members')
             .snapshots(),
         builder: (context, snapshots) {
@@ -79,7 +83,7 @@ class _SearchUserScreenState extends State<SearchUserScreen> {
 
                             data['id'] = roomId;
 
-                            firestore.collection('Classes').doc(classData.id).collection('ChatRooms').doc(roomId).set(data).then((value) {Navigator.pop(context);
+                            firestore.collection('Classes').doc(classData['id']).collection('ChatRooms').doc(roomId).set(data).then((value) {Navigator.pop(context);
                             Navigator.push(context, MaterialPageRoute(builder: (context) => ChatRoom(chatRoomId: roomId, userMap: data, classData: classData, CUser: CuuserModel,)));});
 
 

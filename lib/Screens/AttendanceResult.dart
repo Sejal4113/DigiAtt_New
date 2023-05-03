@@ -29,7 +29,7 @@ class _AttendanceResultState extends State<AttendanceResult> {
       body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('Classes')
-              .doc(classModel.id)
+              .doc(classModel['id'])
               .collection('Attendance')
               .doc(attend_data['id'])
               .collection('List').snapshots(),

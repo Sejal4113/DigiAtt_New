@@ -269,6 +269,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 InkWell(
                   onTap: () {
+
                     try {
                       final provider = Provider.of<GoogleSignInProvider>(
                           context,
@@ -308,6 +309,7 @@ class _SignupScreenState extends State<SignupScreen> {
             if(value != null){
               value.user?.updateDisplayName(_name.text.trim());
               value.user?.updatePhotoURL("");
+              value.user?.updateEmail(_email.text.trim());
             }
         final docRef = FirebaseFirestore.instance
             .collection('Users')
@@ -316,7 +318,8 @@ class _SignupScreenState extends State<SignupScreen> {
             name: _name.text.trim(),
             email: _email.text.trim(),
             photourl: "",
-            role: role1);
+            role: role1,
+            inGroup: []);
         final json = user.toJson();
 
         docRef.set(json).then((value) {

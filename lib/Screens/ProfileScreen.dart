@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:digiatt_new/Screens/HomeScreen.dart';
 import 'package:digiatt_new/methods/UserModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -46,6 +48,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
                 icon: Icon(editingEnabled ? Icons.check : Icons.edit))
           ],
+          leading: IconButton(onPressed: () {
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
+          }, icon: Icon(Icons.arrow_back),),
           backgroundColor: Colors.transparent,
           elevation: 0.0,
           title: const Text(
@@ -101,6 +106,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         )
                                       : CircleAvatar(
                                           radius: size.height * 0.11,
+                                          backgroundColor: user.photourl == '' ? Colors.grey.withOpacity(0.5) : null,
+                                          child: user.photourl == '' ? Icon(Icons.person,color: Colors.grey.shade700,size: 100,) : null,
                                           backgroundImage: user.photourl == ''
                                               ? null
                                               : NetworkImage(user.photourl),
@@ -237,7 +244,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                       .instance
                                                       .signOut()
                                                       .then((value) {
-                                                    Navigator.of(context).pop();
                                                     Navigator.of(context)
                                                         .pushReplacement(
                                                             MaterialPageRoute(
@@ -286,14 +292,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             .collection('Users')
             .doc(user1.uid)
             .update({'name': name});
-        user1.updateDisplayName(name);
+        await user1.updateDisplayName(name);
       }
       if (Urldownload != '') {
-        await FirebaseFirestore.instance
+        
+        FirebaseFirestore.instance
             .collection('Users')
             .doc(user1.uid)
-            .update({'photourl': Urldownload});
-        user1.updatePhotoURL(Urldownload);
+            .update({'photourl': Urldownload}).then((value) => user1.updatePhotoURL(Urldownload));
+
       }
     } on Exception catch (e) {
       snackbarKey.currentState!
@@ -301,7 +308,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     Navigator.of(context).pop();
-    Navigator.of(context).pop();
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ProfileScreen()));
     snackbarKey.currentState!
         .showSnackBar(SnackBar(content: Text('Profile updated')));
   }
@@ -317,7 +324,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (ImageFile == null) {
       Urldownload = '';
     } else {
-      final path = 'groupImages/${ImageFile!.name}';
+      final path = 'userImages/${user1.uid}/profile.png';
       final file = File(ImageFile!.path);
 
       final ref = FirebaseStorage.instance.ref().child(path);
@@ -331,7 +338,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   getImagefromGallery() async {
     ImageFile = await imagePicker.pickImage(
-        source: ImageSource.gallery, imageQuality: 50);
+        source: ImageSource.gallery, imageQuality: 40,);
 
     setState(() {
       ImageFile;

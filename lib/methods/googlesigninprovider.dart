@@ -31,7 +31,8 @@ class GoogleSignInProvider extends ChangeNotifier {
         'email': _user!.email,
         'name': _user!.displayName,
         'photourl': _user!.photoUrl,
-        'role': role
+        'inGroup' : [],
+         'role': role
       }).then((value) => {
                 Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (context) => HomeScreen()))

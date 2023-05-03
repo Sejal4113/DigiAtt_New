@@ -21,6 +21,11 @@ class _CreateGroupState extends State<CreateGroup> {
   final FormKey = GlobalKey<FormState>();
   var _name = TextEditingController();
   var _description = TextEditingController();
+  var _subject = TextEditingController();
+
+  var subjects = [];
+  var no_sub = 0;
+
   var Urldownload;
 
   @override
@@ -110,15 +115,74 @@ class _CreateGroupState extends State<CreateGroup> {
                       ),
                     ),
                     SizedBox(
-                      height: 40,
+                      height: 20,
                     ),
+                    TextFormField(
+                      controller: _subject,
+                      decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              if(_subject.text.isEmpty){
+                                snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('Subject name cannot be empty')));
+                              }else{
+                                if(no_sub > 9){
+                                 snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('Max no of Subjects reached')));
+                                }else {
+                                  setState(() {
+                                    subjects.add(_subject.text.trim());
+                                    no_sub = no_sub + 1;
+                                  });
+                                }
+                              }
+                            },
+                            icon: Icon(Icons.add),
+                          ),
+                          focusColor: Theme.of(context).colorScheme.primary,
+                          border: OutlineInputBorder(),
+                          labelText: 'Enter subjects(only distinct values)'),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'Subjects for your class',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Divider(
+                      thickness: 1,
+                    ),
+                    Container(
+                      child: ListView.separated(
+                        physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              leading: Text((index+1).toString()),
+                              title: Text(subjects[index]),
+                              trailing: IconButton(onPressed: () {
+                                setState(() {
+                                  subjects.removeAt(index);
+                                  no_sub -= 1;
+                                });
+                              }, icon: Icon(Icons.cancel)),
+                            );
+                          },
+                          separatorBuilder: (context, index) {
+                            return Divider();
+                          },
+                          itemCount: subjects.length,),
+                    ),
+                    Divider(),
                     Container(
                         width: size.width,
                         child: ElevatedButton(
                             onPressed: () {
-                              if (FormKey.currentState!.validate()) {
+                              if (FormKey.currentState!.validate() && subjects.isNotEmpty) {
                                 createClass(_name.text.trim(),
                                     _description.text.trim());
+                              }else{
+                                snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('Select Subjects for your Class')));
                               }
                             },
                             child: Text(
@@ -144,17 +208,18 @@ class _CreateGroupState extends State<CreateGroup> {
   }
 
   createClass(String name, String description) async {
-    await uploadFile();
+
 
     final id = DateTime.now().millisecondsSinceEpoch.toString();
 
     final docRef = FirebaseFirestore.instance.collection('Classes').doc(id);
-
+    await uploadFile(id);
     docRef.set({
       'id': id,
       'photourl': Urldownload,
       'name': name,
-      'description': description
+      'description': description,
+      'subjects' : subjects.toSet().toList()
     }).then((value) async {
       var snap = await FirebaseFirestore.instance
           .collection('Users')
@@ -172,10 +237,7 @@ class _CreateGroupState extends State<CreateGroup> {
         var classSnap = await docRef.get();
         await FirebaseFirestore.instance
             .collection('Users')
-            .doc(cuser.uid)
-            .collection('inGroup')
-            .doc(id)
-            .set(classSnap.data()!);
+            .doc(cuser.uid).update({'inGroup' : FieldValue.arrayUnion([id.toString()])});
         snackbarKey.currentState!
             .showSnackBar(SnackBar(content: Text('Group Created')));
         Navigator.of(context).pop();
@@ -184,10 +246,14 @@ class _CreateGroupState extends State<CreateGroup> {
         snackbarKey.currentState!
             .showSnackBar(SnackBar(content: Text(e.toString())));
       }
+
+
+      // Navigator.of(context).pop();
+      // Navigator.of(context).pop();
     });
   }
 
-  uploadFile() async {
+  uploadFile(String id) async {
     showDialog(
         context: NavigatorKey.currentContext!,
         barrierDismissible: false,
@@ -198,13 +264,13 @@ class _CreateGroupState extends State<CreateGroup> {
     if (ImageFile == null) {
       Urldownload = '';
     } else {
-      final path = 'groupImages/${ImageFile!.name}';
+      final path = 'groupImages/${id}/grp_image.png';
       final file = File(ImageFile!.path);
 
       final ref = FirebaseStorage.instance.ref().child(path);
 
       UploadTask? uploadtask = ref.putFile(file);
-      final snapshot = await uploadtask!.whenComplete(() => {});
+      final snapshot = await uploadtask.whenComplete(() => {});
 
       Urldownload = await snapshot.ref.getDownloadURL();
     }

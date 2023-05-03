@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../../methods/CLassModel.dart';
 
 class ClassParticipantsScreen extends StatefulWidget {
-  ClassModel classModel;
+  var classModel;
 
   ClassParticipantsScreen({Key? key, required this.classModel})
       : super(key: key);
@@ -25,7 +25,7 @@ class _ClassParticipantsScreenState extends State<ClassParticipantsScreen> {
       body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('Classes')
-              .doc(classModel.id)
+              .doc(classModel['id'])
               .collection('members')
               .snapshots(),
           builder: (context,snapshots) {

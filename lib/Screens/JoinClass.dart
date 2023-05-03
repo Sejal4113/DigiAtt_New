@@ -121,11 +121,8 @@ class _JoinClassState extends State<JoinClass> {
         await classRef.collection('members').doc(cuser.uid).set(map.data()!);
         try {
           await FirebaseFirestore.instance
-              .collection("Users")
-              .doc(cuser.uid)
-              .collection('inGroup')
-              .doc(code)
-              .set(classSnap.data()!);
+              .collection('Users')
+              .doc(cuser.uid).update({'inGroup' : FieldValue.arrayUnion([classSnap.data()!['id'].toString()])});
         } on FirebaseException catch (e) {
           snackbarKey.currentState!
               .showSnackBar(SnackBar(content: Text(e.message!)));

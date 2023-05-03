@@ -11,7 +11,7 @@ import '../CheckAssignment.dart';
 import '../SubmitAssignment.dart';
 
 class ClassAssignmentScreen extends StatefulWidget {
-  ClassModel classModel;
+  var classModel;
   var userModel;
 
   ClassAssignmentScreen(
@@ -35,7 +35,7 @@ class _ClassAssignmentScreenState extends State<ClassAssignmentScreen> {
         return StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection('Classes')
-                .doc(classModel.id)
+                .doc(classModel['id'])
                 .collection('Assignments')
                 .snapshots(),
             builder: (context, snapshots) {
@@ -43,7 +43,8 @@ class _ClassAssignmentScreenState extends State<ClassAssignmentScreen> {
                 return snapshots.connectionState == ConnectionState.waiting
                     ? Center(
                   child: CircularProgressIndicator(),
-                )
+                ) : (snapshots.data!.docs.length == 0)
+                    ? Center(child: Text('No Assignments Added'),)
                     : ListView.builder(
                     itemBuilder: (context, index) {
                       var data = snapshots.data!.docs[index].data() as Map<
@@ -60,7 +61,7 @@ class _ClassAssignmentScreenState extends State<ClassAssignmentScreen> {
                             MaterialPageRoute(builder: (context) =>
                                 CheckAssignment(assign_data: data,
                                     userModel: userModel,
-                                   classModel: classModel,))),//TODO work the teacher side of assignment
+                                   classModel: classModel,))),
                         leading: CircleAvatar(
                           child: Icon(Icons.book),
                         ),
@@ -68,9 +69,9 @@ class _ClassAssignmentScreenState extends State<ClassAssignmentScreen> {
                         subtitle: Text("End Date : "+data['end_date']),
                       );
                     },
-                    itemCount: snapshots.data!.docs.length);
+                    itemCount: snapshots.data!.docs.length) ;
               }else{
-                return Center(child: Text('No Assignments assigned'),);
+                return Center(child: Text('Error has occured'),);
               }
             });
       }),

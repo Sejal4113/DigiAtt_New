@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'LoginScreen.dart';
 import 'SignupScreen.dart';
 
 class SignupSelect extends StatefulWidget {
@@ -38,7 +39,11 @@ class _SignupSelectState extends State<SignupSelect> {
                 style: TextStyle(fontFamily:'Inter',fontSize: size.width/6,color: Colors.white,fontWeight: FontWeight.w600),
               ),
               SizedBox(
-                height: size.height / 4,
+                height: size.height / 6,
+              ),
+              Text('Select a role to Sign Up',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold,color: Colors.white),),
+              SizedBox(
+                height: size.height / 35,
               ),
               ElevatedButton(
                 onPressed: () {
@@ -70,7 +75,6 @@ class _SignupSelectState extends State<SignupSelect> {
               ),
               ElevatedButton(
                   onPressed: () {
-                    //TODO create a navigator which passes data to signup screen
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -91,6 +95,28 @@ class _SignupSelectState extends State<SignupSelect> {
                         borderRadius: BorderRadius.circular(20)),
                     side: BorderSide(color: Colors.white, width: 2),
                   )),
+              SizedBox(
+                height: size.height / 15,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0,right: 20.0),
+                child: Divider(thickness: 2,color: Colors.white.withOpacity(0.3),),
+              ),
+              SizedBox(
+                height: size.height / 35,
+              ),
+              ElevatedButton(onPressed: () {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+              },style: ElevatedButton.styleFrom(
+                elevation: 6,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                side: BorderSide(color: Colors.white, width: 2),
+              ),child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(' Login ',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.white),),
+              ))
+              
             ],
           ),
         ),

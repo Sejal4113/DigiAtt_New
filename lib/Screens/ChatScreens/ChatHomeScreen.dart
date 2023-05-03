@@ -9,7 +9,7 @@ import '../../methods/UserModel.dart';
 import 'one-to-one/ChatRoom1-1.dart';
 
 class ChatHomeScreen extends StatefulWidget {
-  ClassModel classData;
+  var classData;
   UserModel userdata;
   ChatHomeScreen({Key? key, required this.classData, required this.userdata})
       : super(key: key);
@@ -37,7 +37,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
       body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('Classes')
-              .doc(classData.id)
+              .doc(classData['id'])
               .collection('ChatRooms')
               .snapshots(),
           builder: (context, snapshot) {

@@ -10,7 +10,7 @@ import '../methods/CLassModel.dart';
 import '../methods/UserModel.dart';
 
 class TakeAttendance extends StatefulWidget {
-  ClassModel classModel;
+  var classModel;
   UserModel userModel;
 
   TakeAttendance({Key? key, required this.classModel, required this.userModel}) : super(key: key);
@@ -32,14 +32,7 @@ class _TakeAttendanceState extends State<TakeAttendance> {
   bool authenticated = false;
 
 
-  final subLists = [
-    'Computer Graphics',
-    'Analysis of Algorithm',
-    'Maths',
-    'Operating Systems',
-    'Microprocessor',
-    'Python'
-  ];
+  final subLists = [];
 
   _TakeAttendanceState(this.classModel, this.userModel);
 
@@ -53,6 +46,10 @@ class _TakeAttendanceState extends State<TakeAttendance> {
   @override
   void initState() {
     super.initState();
+      for(int i= 0; i<classModel['subjects'].length ; i++) {
+        subLists.add(classModel['subjects'][i]);
+      }
+
 
     auth.isDeviceSupported().then((bool isSupported) => setState(() => __supportState = isSupported ? _SupportState.supported : _SupportState.unsupported));
   }
@@ -168,7 +165,7 @@ class _TakeAttendanceState extends State<TakeAttendance> {
                       'id' : attend_id
                     };
 
-                    var reference = await FirebaseFirestore.instance.collection('Classes').doc(classModel.id).collection('Attendance').doc(attend_id);
+                    var reference = await FirebaseFirestore.instance.collection('Classes').doc(classModel['id']).collection('Attendance').doc(attend_id);
 
                     if(userModel.role == 'teacher'){
                        try {

@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import '../../methods/UserModel.dart';
 
 class BodyClassHomeScreen extends StatefulWidget {
-  ClassModel classModel;
+  var classModel;
 
   BodyClassHomeScreen({Key? key, required this.classModel}) : super(key: key);
 
@@ -24,20 +24,20 @@ class _BodyClassHomeScreenState extends State<BodyClassHomeScreen> {
   var user = FirebaseAuth.instance.currentUser!;
   final FormKey = GlobalKey<FormState>();
 
-  final subLists = [
-    'Computer Graphics',
-    'Analysis of Algorithm',
-    'Maths',
-    'Operating Systems',
-    'Microprocessor',
-    'Python'
-  ];
+  final subLists = [];
   DateTime Date = DateTime.now();
   TimeOfDay time = TimeOfDay.now();
   var initialvalue;
 
   _BodyClassHomeScreenState(this.classModel);
 
+
+  @override
+  void initState() {
+    for(int i= 0; i<classModel['subjects'].length ; i++) {
+      subLists.add(classModel['subjects'][i]);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +161,7 @@ class _BodyClassHomeScreenState extends State<BodyClassHomeScreen> {
                                   'time' : time1,
                                   'id' : attend_id
                                 };
-                                var reference = await FirebaseFirestore.instance.collection('Classes').doc(classModel.id).collection('Attendance').doc(attend_id).get();
+                                var reference = await FirebaseFirestore.instance.collection('Classes').doc(classModel['id']).collection('Attendance').doc(attend_id).get();
                                  if(reference.exists) {
                                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AttendanceResult(attend_data: map, classModel: classModel,)));
                                  }else{

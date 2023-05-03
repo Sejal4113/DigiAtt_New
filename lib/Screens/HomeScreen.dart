@@ -5,10 +5,8 @@ import 'package:digiatt_new/methods/UserModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import '../main.dart';
-import '../methods/CLassModel.dart';
 import 'ClassScreens/ClassHomeScreen.dart';
 import 'CreateGroup.dart';
 import 'JoinClass.dart';
@@ -23,8 +21,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   var user = FirebaseAuth.instance.currentUser!;
 
-  var _code = TextEditingController();
   var snap;
+  var classlists = [];
+  var _code = TextEditingController();
   var userdata;
 
   @override
@@ -34,12 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('DigiAtt'),
         centerTitle: true,
         actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => ProfileScreen()));
-              },
-              icon: Icon(Icons.person_outline))
+          IconButton(icon: Icon(Icons.person), onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfileScreen())); },)
         ],
       ),
       floatingActionButton: FutureBuilder<UserModel?>(
@@ -56,27 +50,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 ? const Center(
                     child: Text('No user'),
                   )
-                : SpeedDial(
-                    overlayColor: Colors.black,
-                    overlayOpacity: 0.4,
+                : FloatingActionButton(
                     backgroundColor: Theme.of(context).colorScheme.primary,
-                    icon: CupertinoIcons.add,
-                    activeIcon: CupertinoIcons.multiply,
-                    children: [
-                      SpeedDialChild(
-                          visible: (user1.role == 'teacher') ? true : false,
-                          onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) => CreateGroup())),
-                          child: Icon(Icons.group_add),
-                          label: 'Create class'),
-                      SpeedDialChild(
-                          onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) => JoinClass())),
-                          child: Icon(Icons.group_add_outlined),
-                          label: 'Join class')
-                    ],
+                    onPressed: () {
+                      if (userdata.role == 'teacher') {
+                        ShowModalTeacher();
+                      } else {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => JoinClass()));
+                      }
+                    },
+                    child: Icon(Icons.add),
                   );
           } else {
             return Center(
@@ -88,67 +72,104 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      body: Stack(
-        children: [
-          Container(
-            color: Colors.grey.shade100,
-          ),
-          StreamBuilder(
-            stream: readClass(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Container();
-              } else if (snapshot.hasError) {
-                return Container(
-                  child: Center(
-                    child: Text('Something went wrong'),
-                  ),
-                );
-              } else if (snapshot.hasData) {
-                final users = snapshot.data!;
-
-                return ListView(children: users.map(buildClass).toList());
-              } else {
-                return Center(child: CircularProgressIndicator());
-              }
-            },
-          ),
-        ],
+      body: RefreshIndicator(
+        onRefresh: () {
+          return FirebaseFirestore.instance
+              .collection('Users')
+              .doc(user.uid)
+              .get()
+              .then((value) => classlists = value.data()!['inGroup']);
+        },
+        child: FutureBuilder(
+          future: FirebaseFirestore.instance
+              .collection('Users')
+              .doc(user.uid)
+              .get()
+              .then((value) => classlists = value.data()!['inGroup']),
+          builder: (context, snap) {
+            return snap.connectionState == ConnectionState.waiting
+                ? Container()
+                : (snap.data.length == 0) ? Center(child: Text("No classes Joined \n  Press the '+' Icon to Get started",textAlign: TextAlign.center,style: TextStyle(fontSize: 17),),):ListView.separated(
+                    itemBuilder: (context, index) {
+                      return FutureBuilder(
+                          future: FirebaseFirestore.instance
+                              .collection('Classes')
+                              .doc(snap.data[index])
+                              .get(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              var data = snapshot.data!.data()!;
+                              return ListTile(
+                                onTap: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (context) => ClassHomeScreen(
+                                            classData: data,
+                                            userModel: userdata))),
+                                title: Text(data['name']),
+                                subtitle: Text(data['description']),
+                                leading: data['photourl'] == ''
+                                    ? CircleAvatar(backgroundColor: Colors.grey.withOpacity(0.5),child: Icon(Icons.group, color: Colors.grey.shade700),)
+                                    : CircleAvatar(
+                                        backgroundImage:
+                                            NetworkImage(data['photourl']),
+                                      ),
+                              );
+                            } else {
+                              return Container();
+                            }
+                          });
+                    },
+                    separatorBuilder: (context, index) {
+                      return Divider();
+                    },
+                    itemCount: snap.data.length);
+          },
+        ),
       ),
+
+      // body: Stack(
+      //   children: [
+      //     Container(
+      //       color: Colors.grey.shade100,
+      //     ),
+      //     FutureBuilder(
+      //       future: readClass(),
+      //       builder: (context, snapshot) {
+      //         if (snapshot.connectionState == ConnectionState.waiting) {
+      //           return Container();
+      //         } else if (snapshot.hasError) {
+      //           return Container(
+      //             child: Center(
+      //               child: Text('Something went wrong'),
+      //             ),
+      //           );
+      //         } else if (snapshot.hasData) {
+      //           final users = snapshot.data!;
+      //
+      //           return Text(classlists[0]['photourl']);
+      //
+      //           // return ListView.separated(itemBuilder: (context, index) {
+      //           //   return ListTile(
+      //           //     leading: (classlists[index]['photourl'] == '') ? CircleAvatar(
+      //           //       backgroundColor:  Colors.grey.withOpacity(0.5),
+      //           //       child: Icon(Icons.person),
+      //           //     ): CircleAvatar(
+      //           //       backgroundImage: NetworkImage(classlists[index]['photourl']),
+      //           //     )
+      //           //   );
+      //           // }, separatorBuilder: (context,index) {
+      //           //   return Divider();
+      //           //
+      //           // }, itemCount: classlists.length);
+      //         } else {
+      //           return Center(child: CircularProgressIndicator());
+      //         }
+      //       },
+      //     ),
+      //   ],
+      // ),
     );
   }
-
-  Widget buildClass(ClassModel user) => Card(
-        child: ListTile(
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => ClassHomeScreen(classData: user,userModel: userdata, ))),
-          leading: user.photourl == ''
-              ? CircleAvatar(
-                  backgroundColor: Colors.grey.withOpacity(0.5),
-                  child: Icon(
-                    Icons.group,
-                    color: Colors.grey.shade700,
-                  ),
-                )
-              : CircleAvatar(
-                  backgroundImage: NetworkImage(user.photourl),
-                ),
-          title: Text(
-            user.name,
-            style: TextStyle(
-                fontSize: 20, fontWeight: FontWeight.w600, letterSpacing: 0.3),
-          ),
-          subtitle: Text(user.description),
-        ),
-      );
-
-  Stream<List<ClassModel>> readClass() => FirebaseFirestore.instance
-      .collection('Users')
-      .doc(user.uid)
-      .collection('inGroup')
-      .snapshots()
-      .map((snapshot) =>
-          snapshot.docs.map((doc) => ClassModel.fromJson(doc.data())).toList());
 
   Future<UserModel?> ReadUser() async {
     final Docid = FirebaseFirestore.instance.collection("Users").doc(user.uid);
@@ -157,5 +178,67 @@ class _HomeScreenState extends State<HomeScreen> {
     if (snapshot.exists) {
       return UserModel.fromJson(snapshot.data()!);
     }
+  }
+
+  Future ShowModalTeacher() {
+    return showModalBottomSheet(
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(13),
+        ),
+        builder: (context) {
+          return Container(
+            height: 200,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Select an Option',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.grey.shade800,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 4,
+                  ),
+                  Divider(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                          child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => JoinClass()));
+                              },
+                              child: Text('Join a Class'))),
+                    ],
+                  ),
+                  Text(
+                    'OR',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                          child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => CreateGroup()));
+                              },
+                              child: Text('Create a Class'))),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 }

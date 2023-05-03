@@ -142,7 +142,7 @@ class ChatRoom extends StatelessWidget {
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> ReadChats() {
-    String classId = classData.id;
+    String classId = classData['id'];
 
     return firestore
         .collection('Classes')
@@ -156,7 +156,7 @@ class ChatRoom extends StatelessWidget {
 
   void onSendMessage() async {
     if (_message.text.isNotEmpty) {
-      String classId = classData.id;
+      String classId = classData['id'];
 
       Map<String, dynamic> messages = {
         'sendby': CUser.name,

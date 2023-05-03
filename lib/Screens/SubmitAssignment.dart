@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
-import 'package:open_file/open_file.dart';
+import 'package:open_app_file/open_app_file.dart';
 
 import '../main.dart';
 import '../methods/firebase_api.dart';
@@ -37,8 +37,8 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
 
   File? file;
   UploadTask? task;
-  String filename = 'File not Selected';
   double downloadprog = 0.0;
+  String filename = 'File not Selected';
 
   @override
   Widget build(BuildContext context) {
@@ -94,9 +94,8 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                                     ],
                                   ),
                                 ),
-                          data['file_name'] == 'File not Selected'
-                              ? Container()
-                              : Container(
+
+                              Container(
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -126,8 +125,8 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                                                 url: data['url'],
                                                 name: data['file_name'],
                                               onDownloadCompleted: (String path) {
-                                                print('FILE DOWNLOADED TO PATH: $path');
-                                                // OpenFile.open(path); //TODO THIS STATEMENT NOT WORKING
+                                                snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('FILE DOWNLOADED TO PATH: $path')));
+                                                OpenAppFile.open(path);
                                               },
                                                 onProgress: (String? filename,
                                                     double? progress) {
@@ -161,7 +160,7 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                                                   var ref = FirebaseFirestore
                                                       .instance
                                                       .collection('Classes')
-                                                      .doc(ClassModel.id)
+                                                      .doc(ClassModel['id'])
                                                       .collection('Assignments')
                                                       .doc(assign_data['id']
                                                           .toString())
@@ -169,6 +168,7 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                                                       .doc(user);
 
                                                   ref.delete().then((value) {
+
                                                     snackbarKey.currentState!
                                                         .showSnackBar(SnackBar(
                                                             content: Text(
@@ -210,11 +210,14 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                             : Container(
                                 child: Column(
                                   children: [
-                                    Text(
-                                      'Description',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        'Description',
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                     ),
                                     Divider(),
                                     SizedBox(
@@ -234,28 +237,34 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                                   ],
                                 ),
                               ),
-                        assign_data['file_name'] == 'File not Selected'
+                        assign_data['file_name'].length == 0
                             ? Container()
-                            : Container(
-                                child: Column(
-                                  children: [
-                                    Divider(),
-                                    Text(
-                                      'Attached Files:',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    ListTile(
-                                      leading: Icon(Icons.picture_as_pdf),
-                                      title: Text(assign_data['file_name']),
-                                    ),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                  ],
-                                ),
-                              ),
+                             : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                               children: [
+                                 Text('Attachments',style: TextStyle(
+                                     fontSize: 18,
+                                     fontWeight: FontWeight.bold),),
+                                 Divider(),
+                                 Padding(
+                                     padding: const EdgeInsets.all(8.0),
+                                     child: GridView.builder(
+                                         physics: NeverScrollableScrollPhysics(),
+                                         shrinkWrap: true,
+                                         gridDelegate:
+                                         SliverGridDelegateWithFixedCrossAxisCount(
+                                             crossAxisCount: 2,
+                                             mainAxisSpacing: 8,
+                                             crossAxisSpacing: 8),
+                                         itemCount: assign_data['file_name'].length,
+                                         itemBuilder: (context, index) {
+                                           final filename = assign_data['file_name'][index];
+                                           final fileurl = assign_data['file_link'][index];
+
+                                           return buildFile(filename,fileurl);
+                                         })),
+                               ],
+                             ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
@@ -266,7 +275,7 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Attachments',
+                                    'Your Work',
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
@@ -335,7 +344,7 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                                                   var ref = FirebaseFirestore
                                                       .instance
                                                       .collection('Classes')
-                                                      .doc(ClassModel.id)
+                                                      .doc(ClassModel['id'])
                                                       .collection('Assignments')
                                                       .doc(assign_data['id']
                                                           .toString())
@@ -363,6 +372,66 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
             }
             }));
   }
+  Widget buildFile(String filename,String fileurl) {
+    final extension = filename.substring(filename.length - 3);
+    final color = Colors.blueGrey;
+    var download_prog;
+
+    // TWO OPTION AVAILABLE TO VIEW FILES
+
+    // return InkWell(
+    //   onTap: () => OpenAppFile.open(file1.path!),
+    //   child: Container(
+    //     padding: EdgeInsets.all(8),
+    //     child: Column(
+    //       children: [
+    //         Expanded(child: Container(
+    //           alignment: Alignment.center,
+    //           width: 140,
+    //           decoration: BoxDecoration(
+    //             color: color,
+    //             borderRadius: BorderRadius.circular(12),
+    //           ),
+    //           child: Text('${extension}',style: TextStyle(fontSize: 28,fontWeight: FontWeight.bold,color: Colors.white),),
+    //         ),
+    //         ),
+    //         const SizedBox(height: 8,),
+    //         Text(file1.name,style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold,overflow: TextOverflow.ellipsis),),
+    //         Text(fileSize,style: TextStyle(fontSize: 10),)
+    //       ],
+    //     ),
+    //   ),
+    // );
+
+
+    return GridTile(
+          footer: GridTileBar(
+            backgroundColor: Colors.black54,
+            title: Text(filename),
+            // subtitle: (download_prog == 0.0) ? Text('') :Text(download_prog.toString()),
+            trailing: IconButton(
+              icon: Icon(Icons.download),
+              onPressed: () {
+                FileDownloader.downloadFile(url: fileurl,name: filename,onDownloadCompleted: (String path) {
+                  OpenAppFile.open(path);
+                });
+              },
+            ),
+          ),
+          child: Container(
+            color: color,
+            child: Center(
+              child: Text(
+                extension,
+                style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+            ),
+          ),
+    );
+  }
 
   Future selectFiles() async {
     final result = await FilePicker.platform.pickFiles(allowMultiple: false);
@@ -378,7 +447,7 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
   Future uploadFile() async {
     if (file == null) return;
 
-    final destination = 'files/${user}/${filename}';
+    final destination = 'files/assignments/${assign_data['id']}/Submissions/${user}/${filename}';
 
     task = FirebaseApi.uploadFile(destination, file!);
     setState(() {});
@@ -412,7 +481,7 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
     DocumentSnapshot<Map<String, dynamic>> doc = await FirebaseFirestore
         .instance
         .collection('Classes')
-        .doc(ClassModel.id)
+        .doc(ClassModel['id'])
         .collection('Assignments')
         .doc(assign_data['id'].toString())
         .collection('Submission')
