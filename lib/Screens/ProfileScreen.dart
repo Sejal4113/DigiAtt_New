@@ -48,9 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
                 icon: Icon(editingEnabled ? Icons.check : Icons.edit))
           ],
-          leading: IconButton(onPressed: () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
-          }, icon: Icon(Icons.arrow_back),),
+
           backgroundColor: Colors.transparent,
           elevation: 0.0,
           title: const Text(
@@ -99,6 +97,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   child: editingEnabled
                                       ? CircleAvatar(
                                           radius: size.height * 0.11,
+                                          backgroundColor: Colors.black.withOpacity(0.4),
+                                          child: ImageFile == null ? Icon(Icons.person,color: Colors.grey.shade700,size: 100,) :null,
                                           backgroundImage: ImageFile == null
                                               ? null
                                               : FileImage(
@@ -308,7 +308,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     Navigator.of(context).pop();
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ProfileScreen()));
     snackbarKey.currentState!
         .showSnackBar(SnackBar(content: Text('Profile updated')));
   }

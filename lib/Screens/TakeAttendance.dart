@@ -1,13 +1,18 @@
+
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digiatt_new/Screens/AttendanceAuth.dart';
 import 'package:digiatt_new/Screens/ClassScreens/AttendanceScreen.dart';
 import 'package:digiatt_new/main.dart';
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:local_auth/local_auth.dart';
-
-import '../methods/CLassModel.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../methods/UserModel.dart';
+import 'Scan.dart';
 
 class TakeAttendance extends StatefulWidget {
   var classModel;
@@ -33,6 +38,8 @@ class _TakeAttendanceState extends State<TakeAttendance> {
 
 
   final subLists = [];
+  final regions = <Region>[];
+  late StreamSubscription _streamRanging;
 
   _TakeAttendanceState(this.classModel, this.userModel);
 
@@ -41,6 +48,9 @@ class _TakeAttendanceState extends State<TakeAttendance> {
   DateTime Date = DateTime.now();
   TimeOfDay time = TimeOfDay.now();
   var initialvalue;
+  
+  
+  
 
 
   @override
@@ -68,7 +78,7 @@ class _TakeAttendanceState extends State<TakeAttendance> {
       appBar: AppBar(
         title: userModel.role == 'teacher' ?Text('Take Attendance') : Text('Give Attendance'),
       ),
-      body: !isLoading ? Column(
+      body:Column(
         children: [
           SizedBox(height: size.height *0.05,),
           Form(
@@ -155,46 +165,91 @@ class _TakeAttendanceState extends State<TakeAttendance> {
             child: __supportState == _SupportState.supported ? ElevatedButton(
                 onPressed: () async {
                   if(FormKey.currentState!.validate()){
+
+
                     String date = "${Date.day}/${Date.month}/${Date.year}";
                     String time1 = "${time.hour} : ${time.minute}";
-                    String attend_id = initialvalue+'-'+Date.day.toString()+'-'+Date.month.toString()+'-'+Date.year.toString()+'-'+time.hour.toString()+'-'+time.minute.toString();
+                    int attend_id = (new DateTime(Date.year, Date.month, Date.day, time.hour,time.minute).millisecondsSinceEpoch / 10).toInt();
                     var map = {
                       'subject' : initialvalue,
                       'date' : date,
                       'time' : time1,
-                      'id' : attend_id
+                      'id' : attend_id.toString(),
                     };
 
-                    var reference = await FirebaseFirestore.instance.collection('Classes').doc(classModel['id']).collection('Attendance').doc(attend_id);
+                    var reference = await FirebaseFirestore.instance.collection('Classes').doc(classModel['id']).collection('Attendance').doc(attend_id.toString());
 
                     if(userModel.role == 'teacher'){
-                       try {
-                         await reference.set(map);
-                       } on FirebaseException catch (e) {
-                         snackbarKey.currentState!.showSnackBar(SnackBar(content: Text(e.message!)));
-                       }
 
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => AttendanceScreen(attend_data: map, userModel: userModel,ClassModel: classModel,)));
-                    }else{
-                      var snap = await reference.get();
-                      if(snap.exists){
+                        await reference.set(map);
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (context) => AttendanceScreen(
+                              attend_data: map,
+                              userModel: userModel,
+                              ClassModel: classModel,)));
+                    }else if(userModel.role == 'student'){
+                      showLoaderDialog(context);
+                      await Permission.bluetoothScan.request();
+                      PermissionStatus status = await Permission.bluetoothConnect.status;
+                      if(status.isGranted) {
+                        try {
+                          // if you want to include automatic checking permission
+                          await flutterBeacon.initializeAndCheckScanning;
 
-                        Future.delayed(const Duration(milliseconds: 2500), () async {
-                          await authenticate();
+                          PermissionStatus statusScan = await Permission.bluetoothScan.status;
+                          if(statusScan.isGranted) {
+                            if (Platform.isIOS) {
+                              // iOS platform, at least set identifier and proximityUUID for region scanning
+                              regions.add(Region(
+                                  identifier: 'Apple Airlocate',
+                                  proximityUUID: 'E2C56DB5-DFFB-48D2-B060-D0F5A71096E0'));
+                            } else {
+                              // android platform, it can ranging out of beacon that filter all of Proximity UUID
+                              regions.add(Region(identifier: 'com.beacon'));
+                            }
 
-                          if(authenticated){
-                            reference.collection('List').doc(userModel.name).set(userModel.toJson()).then((value) => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AttendanceAuth())));
+                            // to start ranging beacons
+                            _streamRanging = flutterBeacon.ranging(regions).listen((
+                                RangingResult result) {
+                              print(result);
+                              result.beacons.forEach((element) async {
+                                var code = element.proximityUUID.split('-');
+                                if(attend_id.toString() == code.last.toString()){
+                                  await _streamRanging.cancel();
+                                  await authenticate();
+                                  if(authenticated){
+                                    Navigator.pop(context);
+                                    reference.collection('List').doc(userModel.name).set(userModel.toJson()).then((value) => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AttendanceAuth())));
+                                  }
+                                  Navigator.pop(context);
+                                }
+                                print(code.last.toString());
+                              });
+                            });
                           }
 
-
-
-                        });
-
-                        
-                        // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => AttendanceScreen(attend_data: map, userModel: userModel, ClassModel: classModel)), (route) => false);
+                        } on PlatformException catch (e) {
+                          // library failed to initialize, check code and message
+                          print(e.message);
+                        }
                       }else{
-                        snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('Attendance session not created')));
+                        print('Permission failed');
                       }
+                      // var snap = await reference.get();
+                      // if(snap.exists){
+                      //
+                      //   Future.delayed(const Duration(milliseconds: 2500), () async {
+                      //     await authenticate();
+                      //
+                      //     if(authenticated){
+                      //       Navigator.pop(context);
+                      //       reference.collection('List').doc(userModel.name).set(userModel.toJson()).then((value) => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AttendanceAuth())));
+                      //     }
+                      //     Navigator.pop(context);
+                      //   });
+                      // }else{
+                      //   snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('Attendance session not created')));
+                      // }
                     }
 
 
@@ -205,11 +260,35 @@ class _TakeAttendanceState extends State<TakeAttendance> {
                     : Text('Give Attendance'))
             : Text('not supported'),
           ),
+          ElevatedButton(onPressed: () async {
+            await _streamRanging.cancel();
+          }, child: Text('Stop'))
         ],
-      ) : Center(child: CircularProgressIndicator(),),
+      )
 
     );
   }
+
+
+  showLoaderDialog(BuildContext context){
+    AlertDialog alert=AlertDialog(
+      content: new Row(
+        children: [
+          CircularProgressIndicator(),
+          Container(margin: EdgeInsets.only(left: 7),child:Text("Loading..." )),
+        ],),
+    );
+    showDialog(barrierDismissible: false,
+      context:context,
+      builder:(BuildContext context){
+        return Center(child: CircularProgressIndicator(),);
+      },
+    );
+  }
+
+
+
+
 
 
 Future authenticate() async {
@@ -220,7 +299,7 @@ Future authenticate() async {
       authorized = 'Authenticating';
     });
 
-    authenticated = await auth.authenticate(localizedReason: 'Verify fingerprint', options: AuthenticationOptions(stickyAuth: true, useErrorDialogs: true,biometricOnly: true));
+    authenticated = await auth.authenticate(localizedReason: 'Verify fingerprint', options: AuthenticationOptions(stickyAuth: true, useErrorDialogs: true,biometricOnly: true,));
   }on PlatformException catch (e) {
     print(e.message);
     setState(

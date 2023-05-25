@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('DigiAtt'),
         centerTitle: true,
         actions: [
-          IconButton(icon: Icon(Icons.person), onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfileScreen())); },)
+          IconButton(icon: Icon(Icons.person), onPressed: () { Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen())); },)
         ],
       ),
       floatingActionButton: FutureBuilder<UserModel?>(

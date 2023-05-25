@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 
+
 import '../../methods/UserModel.dart';
 
 class BodyClassHomeScreen extends StatefulWidget {
@@ -46,6 +47,8 @@ class _BodyClassHomeScreenState extends State<BodyClassHomeScreen> {
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
+
+
       body: FutureBuilder<UserModel?>(
         future: ReadUser(),
         builder: (context, snapshot) {
@@ -167,7 +170,6 @@ class _BodyClassHomeScreenState extends State<BodyClassHomeScreen> {
                                  }else{
                                    snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('Attendance record not found')));
                                  }
-                                // snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('works')));
                               }
                                   }, child: Text('Download record'))),
                         ),
