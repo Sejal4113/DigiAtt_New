@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:flutter/services.dart';
 
 import '../../methods/CLassModel.dart';
 import '../../methods/UserModel.dart';
@@ -15,77 +15,142 @@ class ClassHomeScreen extends StatefulWidget {
   var classData;
   UserModel userModel;
 
-  ClassHomeScreen({Key? key, required this.classData,required this.userModel}) : super(key: key);
+  ClassHomeScreen({Key? key, required this.classData, required this.userModel})
+      : super(key: key);
 
   @override
-  State<ClassHomeScreen> createState() => _ClassHomeScreenState(classData,userModel);
+  State<ClassHomeScreen> createState() =>
+      _ClassHomeScreenState(classData, userModel);
 }
 
 class _ClassHomeScreenState extends State<ClassHomeScreen> {
   var classData;
   var userModel;
-  int index = 0;
+  int currentindex = 0;
 
-  _ClassHomeScreenState(this.classData,this.userModel);
+  _ClassHomeScreenState(this.classData, this.userModel);
 
   var cUser = FirebaseAuth.instance.currentUser!;
 
+  late List<Widget> _pages = [
+    BodyClassHomeScreen(classModel: classData),
+    ClassAssignmentScreen(classModel: classData, userModel: userModel),
+    ClassParticipantsScreen(classModel: classData)
+  ];
+
+  @override
+  void initState() {
+    // _pages = [
+    //   BodyClassHomeScreen(classModel: classData),
+    //   ClassAssignmentScreen(classModel: classData, userModel: userModel),
+    //   ClassParticipantsScreen(classModel: classData)
+    // ];
+  }
+
   @override
   Widget build(BuildContext context) {
+    // return SafeArea(
+    //   child: Scaffold(
+    //     body: NestedScrollView(
+    //       headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+    //         return [
+    //           SliverAppBar(
+    //             title: Text(classData['name']),
+    //             actions: [
+    //               IconButton(
+    //                   onPressed: () {
+    //                     Navigator.of(context).push(MaterialPageRoute(
+    //                         builder: (context) => GroupChatScreen(
+    //                               classModel: classData,
+    //                               userModel: userModel,
+    //                             )));
+    //                   },
+    //                   icon: Icon(Icons.messenger_rounded)),
+    //               (userModel.role == 'teacher')
+    //                   ? IconButton(
+    //                       onPressed: () {
+    //                         Navigator.of(context)
+    //                             .pushReplacement(MaterialPageRoute(
+    //                                 builder: (context) => ClassSettingsScreen(
+    //                                       classData: classData,
+    //                                       userModel: userModel,
+    //                                     )));
+    //                       },
+    //                       icon: Icon(Icons.settings))
+    //                   : Container()
+    //             ],
+    //             elevation: 20.0,
+    //             expandedHeight: 50,
+    //           )
+    //         ];
+    //       },
+    //       body: getPage(currentindex)!,
+    //     ),
+    //     bottomNavigationBar:
+    //   ),
+    // );
     return Scaffold(
-        appBar: AppBar(
-          title: Text(classData['name']),
-          actions: [
-            IconButton(onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => GroupChatScreen(classModel: classData, userModel: userModel,)));
-            }, icon: Icon(Icons.messenger_rounded)),
-            (userModel.role == 'teacher') ?
-            IconButton(onPressed: () {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ClassSettingsScreen(classData: classData,userModel: userModel,)));
-            }, icon: Icon(Icons.settings)) : Container()
-          ],
-        ),
-        body: getPage(index),
-        bottomNavigationBar: Container(
-          color: Theme.of(context).colorScheme.primary,
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: GNav(
-              gap: 12,
-              color: Colors.white,
-              tabBackgroundColor: Colors.white,
-              activeColor: Colors.black,
-              padding: EdgeInsets.all(16),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              selectedIndex: index,
-              onTabChange: (index) => setState(() {
-                this.index = index;
-              }),
-              tabs: [
-                GButton(
-                  icon: Icons.home,
-                  text: 'Home',
-                ),
-                GButton(
-                  icon: Icons.assignment,
-                  text: 'Assignments',
-                ),
-                GButton(
-                  icon: Icons.people_alt,
-                  text: 'Participants',
-                ),
-              ],
-            ),
+      appBar: AppBar(
+        title: Text(classData['name']),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => GroupChatScreen(
+                          classModel: classData,
+                          userModel: userModel,
+                        )));
+              },
+              icon: Icon(Icons.messenger_rounded)),
+          (userModel.role == 'teacher')
+              ? IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => ClassSettingsScreen(
+                              classData: classData,
+                              userModel: userModel,
+                            )));
+                  },
+                  icon: Icon(Icons.settings))
+              : Container()
+        ],
+      ),
+      body: IndexedStack(
+        children: _pages,
+        index: currentindex,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        elevation: 8,
+        selectedIconTheme: IconThemeData(size: 30),
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            label: 'Home',
           ),
-        ));
+          BottomNavigationBarItem(
+            icon: Icon(Icons.assignment_outlined),
+            label: 'Assignments',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.group_outlined),
+            label: 'Participants',
+          ),
+        ],
+        currentIndex: currentindex,
+        onTap: (int index) {
+          setState(() {
+            currentindex = index;
+          });
+        },
+      ),
+    );
   }
 
   Widget? getPage(int index) {
     switch (index) {
       case 0:
         {
-          setState(() {
-          });
+          setState(() {});
           return BodyClassHomeScreen(
             classModel: classData,
           );
@@ -93,22 +158,21 @@ class _ClassHomeScreenState extends State<ClassHomeScreen> {
         break;
 
       case 1:
-        {setState(() {
-
-        });
+        {
+          setState(() {});
           return ClassAssignmentScreen(
-            classModel: classData, userModel: userModel,
+            classModel: classData,
+            userModel: userModel,
           );
         }
         break;
-      case 2: {
-        setState(() {
-
-        });
-        return ClassParticipantsScreen(
-          classModel: classData,
-        );
-      }
+      case 2:
+        {
+          setState(() {});
+          return ClassParticipantsScreen(
+            classModel: classData,
+          );
+        }
 
         break;
     }

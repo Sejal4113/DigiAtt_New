@@ -43,6 +43,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
     return Scaffold(
       body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
         child: Container(
           width: size.width,
           height: size.height,

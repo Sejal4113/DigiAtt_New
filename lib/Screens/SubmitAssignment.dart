@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
+import 'package:intl/intl.dart';
 import 'package:open_app_file/open_app_file.dart';
 
 import '../main.dart';
@@ -281,7 +282,7 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Text(
-                                      'End Date :  ' + assign_data['end_date']),
+                                      'End Date :  ' + DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(assign_data['end_date'])).toString()),
                                 ],
                               ),
                               new Divider(),
@@ -303,6 +304,11 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                                           child: Icon(Icons.book_rounded),
                                         ),
                                         title: Text(filename),
+                                        trailing: InkWell(onTap: () {
+                                          setState(() {
+                                            file = null;
+                                          });
+                                        },child: Icon(Icons.cancel)),
                                       ),
                                     ),
                             ],
@@ -312,18 +318,21 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                     ),
                     Column(
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                                child: Container(
-                                    child: ElevatedButton(
-                                        onPressed: file == null
-                                            ? () {
-                                                selectFiles();
-                                              }
-                                            : null,
-                                        child: Text('Attach Files')))),
-                          ],
+                        Visibility(
+                          visible: file == null ? true : false,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  child: Container(
+                                      child: ElevatedButton(
+                                          onPressed: file == null
+                                              ? () {
+                                                  selectFiles();
+                                                }
+                                              : null,
+                                          child: Text('Attach PDF')))),
+                            ],
+                          ),
                         ),
                         Row(
                           children: [
@@ -434,7 +443,7 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
   }
 
   Future selectFiles() async {
-    final result = await FilePicker.platform.pickFiles(allowMultiple: false);
+    final result = await FilePicker.platform.pickFiles(allowMultiple: false,allowedExtensions: ['pdf'],type: FileType.custom,);
 
     if (result == null) return;
     final path = result.files.single.path!;

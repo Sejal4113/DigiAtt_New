@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
+  animations:
+    dependency: "direct main"
+    description:
+      name: animations
+      sha256: fe8a6bdca435f718bb1dc8a11661b2c22504c6da40ef934cee8327ed77934164
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.7"
   archive:
     dependency: transitive
     description:
@@ -384,14 +392,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  google_nav_bar:
+  google_mobile_ads:
     dependency: "direct main"
     description:
-      name: google_nav_bar
-      sha256: "1c8e3882fa66ee7b74c24320668276ca23affbd58f0b14a24c1e5590f4d07ab0"
+      name: google_mobile_ads
+      sha256: "24ee4e9546866cc15ebe565dabf6a6c485ce5fbec0645fde22799800532000f0"
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.6"
+    version: "3.0.0"
   google_sign_in:
     dependency: "direct main"
     description:
@@ -584,6 +592,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.7"
+  lottie:
+    dependency: "direct main"
+    description:
+      name: lottie
+      sha256: "23522951540d20a57a60202ed7022e6376bed206a4eee1c347a91f58bd57eb9f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.2"
   markdown:
     dependency: transitive
     description:
@@ -837,6 +853,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.5"
+  syncfusion_flutter_charts:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_charts
+      sha256: a70aa0b2608c5b11bfe549c13572e87d929553703f6987497589217d106b2ad7
+      url: "https://pub.dev"
+    source: hosted
+    version: "21.2.6"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      sha256: "998d242c1f022eccf53f414a4343af34ab980700fee36cef8f78d94538ca749f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "21.2.6"
   term_glyph:
     dependency: transitive
     description:
@@ -893,6 +925,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  visibility_detector:
+    dependency: transitive
+    description:
+      name: visibility_detector
+      sha256: "15c54a459ec2c17b4705450483f3d5a2858e733aee893dcee9d75fd04814940d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.3"
+  webview_flutter:
+    dependency: transitive
+    description:
+      name: webview_flutter
+      sha256: "5604dac1178680a34fbe4a08c7b69ec42cca6601dc300009ec9ff69bef284cc2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.1"
+  webview_flutter_android:
+    dependency: transitive
+    description:
+      name: webview_flutter_android
+      sha256: "57a22c86065375c1598b57224f92d6008141be0c877c64100de8bfb6f71083d8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.7.1"
+  webview_flutter_platform_interface:
+    dependency: transitive
+    description:
+      name: webview_flutter_platform_interface
+      sha256: "656e2aeaef318900fffd21468b6ddc7958c7092a642f0e7220bac328b70d4a81"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.1"
+  webview_flutter_wkwebview:
+    dependency: transitive
+    description:
+      name: webview_flutter_wkwebview
+      sha256: "6bbc6ade302b842999b27cbaa7171241c273deea8a9c73f92ceb3d811c767de2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.4"
   win32:
     dependency: transitive
     description:

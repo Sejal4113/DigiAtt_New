@@ -177,12 +177,7 @@ class _NewAssignmentState extends State<NewAssignment> {
                                 if (Formkey.currentState!.validate()) {
                                   if (Date.isAfter(DateTime.now())) {
 
-
-                                    String date = Date.day.toString() +
-                                        '/' +
-                                        Date.month.toString() +
-                                        '/' +
-                                        Date.year.toString();
+                                    int date = DateTime(Date.year,Date.month,Date.day).millisecondsSinceEpoch;
                                     var id =
                                         DateTime.now().millisecondsSinceEpoch;
                                     var FileUrls = await Future.wait(file.map((e) => uploadFile(e,id.toString())));
