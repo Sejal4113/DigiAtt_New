@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:intl/intl.dart';
@@ -11,6 +12,7 @@ import 'package:open_app_file/open_app_file.dart';
 
 import '../main.dart';
 import '../methods/firebase_api.dart';
+import 'PDFViewer.dart';
 
 class SubmitAssignment extends StatefulWidget {
   var assign_data;
@@ -33,6 +35,7 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
   var userModel;
   var ClassModel;
   var user = FirebaseAuth.instance.currentUser!.uid;
+
 
   _SubmitAssignmentState(this.assign_data, this.userModel, this.ClassModel);
 
@@ -122,19 +125,21 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                                                 color: Colors.black)),
                                         child: ListTile(
                                           onTap: () {
-                                            FileDownloader.downloadFile(
-                                                url: data['url'],
-                                                name: data['file_name'],
-                                              onDownloadCompleted: (String path) {
-                                                snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('FILE DOWNLOADED TO PATH: $path')));
-                                                OpenAppFile.open(path);
-                                              },
-                                                onProgress: (String? filename,
-                                                    double? progress) {
-                                                  setState(() {
-                                                    downloadprog = progress!;
-                                                  });
-                                                },);
+                                            Navigator.of(context).push(CupertinoPageRoute(builder: (context) => PDFViewer(submission_data: data,assign_id: assign_data['id'],class_id: ClassModel['id'],)));
+
+                                            // FileDownloader.downloadFile(
+                                            //     url: data['url'],
+                                            //     name: data['file_name'],
+                                            //   onDownloadCompleted: (String path) {
+                                            //     snackbarKey.currentState!.showSnackBar(SnackBar(content: Text('FILE DOWNLOADED TO PATH: $path')));
+                                            //     OpenAppFile.open(path);
+                                            //   },
+                                            //     onProgress: (String? filename,
+                                            //         double? progress) {
+                                            //       setState(() {
+                                            //         downloadprog = progress!;
+                                            //       });
+                                            //     },);
                                           },
                                           leading: Icon(Icons.picture_as_pdf),
                                           title: Text(data['file_name']),
@@ -157,7 +162,8 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                                       child: ElevatedButton(
                                           onPressed: task != null
                                               ? null
-                                              : () {
+                                              : () async {
+                                            await FirebaseStorage.instance.refFromURL(data['url']).delete();
                                                   var ref = FirebaseFirestore
                                                       .instance
                                                       .collection('Classes')
@@ -180,7 +186,7 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                                           child: Text('UnSubmit Assignment')))),
                             ],
                           ),
-                          !(downloadprog == 0.0)
+                          (downloadprog == 0.0)
                               ? Container()
                               : Container(
                                   child: LinearProgressIndicator(
@@ -193,189 +199,193 @@ class _SubmitAssignmentState extends State<SubmitAssignment> {
                   ),
                 );
               }else{
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 10,
-                        ),
-                        (assign_data['description'] == '')
-                            ? Container()
-                            : Container(
-                                child: Column(
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        'Description',
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold),
+              return SingleChildScrollView(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 10,
+                          ),
+                          (assign_data['description'] == '')
+                              ? Container()
+                              : Container(
+                                  child: Column(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          'Description',
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
                                       ),
+                                      Divider(),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 8.0,
+                                            bottom: 8,
+                                            left: 16,
+                                            right: 16),
+                                        child: Text(assign_data['description']),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                          assign_data['file_name'].length == 0
+                              ? Container()
+                               : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                                 children: [
+                                   Text('Attachments',style: TextStyle(
+                                       fontSize: 18,
+                                       fontWeight: FontWeight.bold),),
+                                   Divider(),
+                                   Padding(
+                                       padding: const EdgeInsets.all(8.0),
+                                       child: GridView.builder(
+                                           physics: NeverScrollableScrollPhysics(),
+                                           shrinkWrap: true,
+                                           gridDelegate:
+                                           SliverGridDelegateWithFixedCrossAxisCount(
+                                               crossAxisCount: 2,
+                                               mainAxisSpacing: 8,
+                                               crossAxisSpacing: 8),
+                                           itemCount: assign_data['file_name'].length,
+                                           itemBuilder: (context, index) {
+                                             final filename = assign_data['file_name'][index];
+                                             final fileurl = assign_data['file_link'][index];
+
+                                             return buildFile(filename,fileurl);
+                                           })),
+                                 ],
+                               ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Your Work',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
                                     ),
-                                    Divider(),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 8.0,
-                                          bottom: 8,
-                                          left: 16,
-                                          right: 16),
-                                      child: Text(assign_data['description']),
-                                    ),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
+                                    Text(
+                                        'End Date :  ' + DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(assign_data['end_date'])).toString()),
                                   ],
                                 ),
-                              ),
-                        assign_data['file_name'].length == 0
-                            ? Container()
-                             : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                               children: [
-                                 Text('Attachments',style: TextStyle(
-                                     fontSize: 18,
-                                     fontWeight: FontWeight.bold),),
-                                 Divider(),
-                                 Padding(
-                                     padding: const EdgeInsets.all(8.0),
-                                     child: GridView.builder(
-                                         physics: NeverScrollableScrollPhysics(),
-                                         shrinkWrap: true,
-                                         gridDelegate:
-                                         SliverGridDelegateWithFixedCrossAxisCount(
-                                             crossAxisCount: 2,
-                                             mainAxisSpacing: 8,
-                                             crossAxisSpacing: 8),
-                                         itemCount: assign_data['file_name'].length,
-                                         itemBuilder: (context, index) {
-                                           final filename = assign_data['file_name'][index];
-                                           final fileurl = assign_data['file_link'][index];
-
-                                           return buildFile(filename,fileurl);
-                                         })),
-                               ],
-                             ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Your Work',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                      'End Date :  ' + DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(assign_data['end_date'])).toString()),
-                                ],
-                              ),
-                              new Divider(),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              file == null
-                                  ? Container(
-                                      child: Text('No Attached Files'),
-                                    )
-                                  : Container(
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(11),
-                                          border:
-                                              Border.all(color: Colors.black)),
-                                      child: ListTile(
-                                        leading: CircleAvatar(
-                                          child: Icon(Icons.book_rounded),
+                                new Divider(),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                file == null
+                                    ? Container(
+                                        child: Text('No Attached Files'),
+                                      )
+                                    : Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(11),
+                                            border:
+                                                Border.all(color: Colors.black)),
+                                        child: ListTile(
+                                          leading: CircleAvatar(
+                                            child: Icon(Icons.book_rounded),
+                                          ),
+                                          title: Text(filename),
+                                          trailing: InkWell(onTap: () {
+                                            setState(() {
+                                              file = null;
+                                            });
+                                          },child: Icon(Icons.cancel)),
                                         ),
-                                        title: Text(filename),
-                                        trailing: InkWell(onTap: () {
-                                          setState(() {
-                                            file = null;
-                                          });
-                                        },child: Icon(Icons.cancel)),
                                       ),
-                                    ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Visibility(
-                          visible: file == null ? true : false,
-                          child: Row(
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Visibility(
+                            visible: file == null ? true : false,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                    child: Container(
+                                        child: ElevatedButton(
+                                            onPressed: file == null
+                                                ? () {
+                                                    selectFiles();
+                                                  }
+                                                : null,
+                                            child: Text('Attach PDF')))),
+                              ],
+                            ),
+                          ),
+                          Row(
                             children: [
                               Expanded(
                                   child: Container(
                                       child: ElevatedButton(
-                                          onPressed: file == null
-                                              ? () {
-                                                  selectFiles();
-                                                }
-                                              : null,
-                                          child: Text('Attach PDF')))),
+                                          onPressed: task != null
+                                              ? null
+                                              : () {
+                                            var date = DateTime.now().millisecondsSinceEpoch;
+                                                  uploadFile().then((value) {
+                                                    var map = {
+                                                      'name': userModel.name,
+                                                      'email': userModel.email,
+                                                      'id': user,
+                                                      'url': value,
+                                                      'submit_date' : date,
+                                                      'file_name': filename
+                                                    };
+                                                    var ref = FirebaseFirestore
+                                                        .instance
+                                                        .collection('Classes')
+                                                        .doc(ClassModel['id'])
+                                                        .collection('Assignments')
+                                                        .doc(assign_data['id']
+                                                            .toString())
+                                                        .collection('Submission')
+                                                        .doc(user);
+
+                                                    ref.set(map).then((value) {
+                                                      snackbarKey.currentState!
+                                                          .showSnackBar(SnackBar(
+                                                              content: Text(
+                                                                  'Assignment submitted')));
+                                                      Navigator.pop(context);
+                                                    });
+                                                  });
+                                                },
+                                          child: Text('Submit Assignment')))),
                             ],
                           ),
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                                child: Container(
-                                    child: ElevatedButton(
-                                        onPressed: task != null
-                                            ? null
-                                            : () {
-                                                uploadFile().then((value) {
-                                                  var map = {
-                                                    'name': userModel.name,
-                                                    'email': userModel.email,
-                                                    'id': user,
-                                                    'url': value,
-                                                    'file_name': filename
-                                                  };
-                                                  var ref = FirebaseFirestore
-                                                      .instance
-                                                      .collection('Classes')
-                                                      .doc(ClassModel['id'])
-                                                      .collection('Assignments')
-                                                      .doc(assign_data['id']
-                                                          .toString())
-                                                      .collection('Submission')
-                                                      .doc(user);
-
-                                                  ref.set(map).then((value) {
-                                                    snackbarKey.currentState!
-                                                        .showSnackBar(SnackBar(
-                                                            content: Text(
-                                                                'Assignment submitted')));
-                                                    Navigator.pop(context);
-                                                  });
-                                                });
-                                              },
-                                        child: Text('Submit Assignment')))),
-                          ],
-                        ),
-                        task != null ? buildUploadStatus(task!) : Container(),
-                      ],
-                    ),
-                  ],
+                          task != null ? buildUploadStatus(task!) : Container(),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               );
             }

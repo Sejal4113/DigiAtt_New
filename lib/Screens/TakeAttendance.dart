@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:beacon_broadcast/beacon_broadcast.dart' as Broadcast;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:digiatt_new/Screens/AttendanceAuth.dart';
 import 'package:digiatt_new/Screens/ClassScreens/AttendanceScreen.dart';
 import 'package:digiatt_new/Screens/Scan.dart';
 import 'package:digiatt_new/main.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -37,6 +37,7 @@ class _TakeAttendanceState extends State<TakeAttendance> {
   String authorized = 'Not Authorized';
   bool isAuthenticating = false;
   bool authenticated = false;
+  var timestamp;
 
   final subLists = [];
   final regions = <Region>[];
@@ -161,7 +162,6 @@ class _TakeAttendanceState extends State<TakeAttendance> {
                 ),
               ],
             ),
-            Text(''),
             SizedBox(
               height: size.height * 0.1,
             ),
@@ -171,6 +171,7 @@ class _TakeAttendanceState extends State<TakeAttendance> {
                       onPressed: () async {
                         if (FormKey.currentState!.validate()) {
                           // On CLICK SET REFERENCE
+                          timestamp = (DateTime(Date.year,Date.month,Date.day,time.hour,time.minute).millisecondsSinceEpoch / 10).toInt();
                           String date =
                               "${Date.day}/${Date.month}/${Date.year}";
                           String time1 = "${time.hour} : ${time.minute}";
@@ -181,23 +182,37 @@ class _TakeAttendanceState extends State<TakeAttendance> {
                               .toInt();
                           var map = {
                             'subject': initialvalue,
-                            'date': date,
-                            'time': time1,
-                            'id': attend_id.toString(),
+                            'timestamp' : timestamp,
+                            'id': timestamp.toString(),
                           };
 
-                          var reference = await FirebaseFirestore.instance
-                              .collection('Classes')
-                              .doc(classModel['id'])
-                              .collection('Attendance')
-                              .doc(attend_id.toString());
-
-                          await reference.set(map);
 
                           if (userModel.role == 'teacher') {
+
+                            var reference = await FirebaseFirestore.instance
+                                .collection('Classes')
+                                .doc(classModel['id'])
+                                .collection('Attendance')
+                                .doc(timestamp.toString());
+                            await reference.set(map);
+
+                            await FirebaseFirestore.instance.collection('Classes').doc(classModel['id']).collection('members').where('role', isEqualTo: 'student').get().then((querySnapshot) async {
+                              var ref = reference.collection('Lists');
+                              for(var docSnapshot in querySnapshot.docs) {
+                                await ref.doc(docSnapshot.id);
+                                await ref.doc(docSnapshot.id).set({
+                                  'Present' : false,
+                                  'name' : docSnapshot.data()['name'],
+                                  'email' : docSnapshot.data()['email'],
+                                  'photourl' : docSnapshot.data()['photourl']
+                                });
+                                print('${docSnapshot.id} => ${docSnapshot.data()}');
+                              }
+                            });
+
                             Broadcast.BeaconStatus status = await checkStatus();
                             if (status == Broadcast.BeaconStatus.supported) {
-                              await reference.set(map);
+
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -210,8 +225,11 @@ class _TakeAttendanceState extends State<TakeAttendance> {
                           } else if (userModel.role == 'student') {
                             await Permission.bluetoothScan.request();
 
+
                             PermissionStatus status =
                                 await Permission.bluetoothConnect.status;
+
+                            print(status);
                             if (status.isGranted) {
                               try {
                                 // if you want to include automatic checking permission
@@ -238,6 +256,8 @@ class _TakeAttendanceState extends State<TakeAttendance> {
                                 // library failed to initialize, check code and message
                                 print(e.message);
                               }
+                            }else{
+                              await Permission.bluetoothConnect.request();
                             }
                           }
                         }
@@ -249,6 +269,27 @@ class _TakeAttendanceState extends State<TakeAttendance> {
             ),
           ],
         ));
+  }
+
+
+
+  deleteFile(pathToFile, fileName) async {
+    var ref = await FirebaseStorage.instance.ref(pathToFile);
+    var childRef = ref.child(fileName);
+    childRef.delete();
+  }
+
+  deleteFolder(path) async {
+    var ref = await FirebaseStorage.instance.ref(path);
+    ref
+        .listAll()
+        .then((dir) => {
+      dir.items.forEach(
+              (fileRef) => this.deleteFile(ref.fullPath, fileRef.name)),
+      dir.prefixes
+          .forEach((folderRef) => this.deleteFolder(folderRef.fullPath))
+    })
+        .catchError((error) => print(error));
   }
 
   showLoaderDialog(BuildContext context) {

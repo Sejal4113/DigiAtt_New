@@ -42,9 +42,11 @@ dependencies:
   image_picker: ^0.8.6
   intl: ^0.18.1
   flutter_beacon: ^0.5.1
+  awesome_circular_chart: ^1.0.0
   syncfusion_flutter_charts: ^21.2.6
   google_mobile_ads: ^3.0.0
   animations: ^2.0.7
+  syncfusion_flutter_pdfviewer: ^21.2.8
   permission_handler: ^10.2.0
   beacon_broadcast: ^0.3.1
   firebase_auth: ^4.2.4

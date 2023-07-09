@@ -33,7 +33,7 @@ class _ClassHomeScreenState extends State<ClassHomeScreen> {
   var cUser = FirebaseAuth.instance.currentUser!;
 
   late List<Widget> _pages = [
-    BodyClassHomeScreen(classModel: classData),
+    BodyClassHomeScreen(classModel: classData,userModel: userModel),
     ClassAssignmentScreen(classModel: classData, userModel: userModel),
     ClassParticipantsScreen(classModel: classData)
   ];
@@ -153,6 +153,7 @@ class _ClassHomeScreenState extends State<ClassHomeScreen> {
           setState(() {});
           return BodyClassHomeScreen(
             classModel: classData,
+            userModel: userModel,
           );
         }
         break;

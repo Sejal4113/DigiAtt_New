@@ -40,21 +40,47 @@ class _ClassParticipantsScreenState extends State<ClassParticipantsScreen> {
                   Slist.add(element.data());
                 }
               });
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 18.0,left: 12,bottom: 8),
-                      child: Text('Teachers',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                    ),
-                     Divider(thickness: 2,),
-                     ListView.builder(physics: NeverScrollableScrollPhysics(),shrinkWrap: true,itemCount: Tlist.length,itemBuilder: (context, index) {
+              return Container(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 18.0,left: 12,bottom: 8),
+                        child: Text('Teachers',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                      ),
+                       Divider(thickness: 2,),
+                       ListView.builder(physics: NeverScrollableScrollPhysics(),shrinkWrap: true,itemCount: Tlist.length,itemBuilder: (context, index) {
+
+                          return Container(
+                            child: ListTile(
+                              title: Text(Tlist[index]['name']),
+                              subtitle: Text(Tlist[index]['email']),
+                              leading: Tlist[index]['photourl'] == ''
+                                  ? CircleAvatar(
+                                backgroundColor: Colors.grey.withOpacity(0.5),
+                                child: Icon(
+                                  Icons.group,
+                                  color: Colors.grey.shade700,
+                                ),
+                              )
+                                  : CircleAvatar(
+                                backgroundImage: NetworkImage(Tlist[index]['photourl']),
+                              ),
+                            ),
+                          );
+                        }),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 18.0,left: 12,bottom: 8),
+                        child: Text('Students',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                      ),
+                      Divider(thickness: 2,),
+                      ListView.builder(physics: NeverScrollableScrollPhysics(),shrinkWrap: true,itemCount: Slist.length,itemBuilder: (context, index) {
 
                         return ListTile(
-                          title: Text(Tlist[index]['name']),
-                          subtitle: Text(Tlist[index]['email']),
-                          leading: Tlist[index]['photourl'] == ''
+                          title: Text(Slist[index]['name']),
+                          subtitle: Text(Slist[index]['email']),
+                          leading: Slist[index]['photourl'] == ''
                               ? CircleAvatar(
                             backgroundColor: Colors.grey.withOpacity(0.5),
                             child: Icon(
@@ -63,34 +89,12 @@ class _ClassParticipantsScreenState extends State<ClassParticipantsScreen> {
                             ),
                           )
                               : CircleAvatar(
-                            backgroundImage: NetworkImage(Tlist[index]['photourl']),
+                            backgroundImage: NetworkImage(Slist[index]['photourl']),
                           ),
                         );
                       }),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 18.0,left: 12,bottom: 8),
-                      child: Text('Students',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                    ),
-                    Divider(thickness: 2,),
-                    ListView.builder(physics: NeverScrollableScrollPhysics(),shrinkWrap: true,itemCount: Slist.length,itemBuilder: (context, index) {
-
-                      return ListTile(
-                        title: Text(Slist[index]['name']),
-                        subtitle: Text(Slist[index]['email']),
-                        leading: Slist[index]['photourl'] == ''
-                            ? CircleAvatar(
-                          backgroundColor: Colors.grey.withOpacity(0.5),
-                          child: Icon(
-                            Icons.group,
-                            color: Colors.grey.shade700,
-                          ),
-                        )
-                            : CircleAvatar(
-                          backgroundImage: NetworkImage(Slist[index]['photourl']),
-                        ),
-                      );
-                    }),
-                  ],
+                    ],
+                  ),
                 ),
               );
             }

@@ -1,3 +1,4 @@
+// import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digiatt_new/Screens/ProfileScreen.dart';
 import 'package:digiatt_new/methods/UserModel.dart';
@@ -25,6 +26,15 @@ class _HomeScreenState extends State<HomeScreen> {
   var classlists = [];
   var _code = TextEditingController();
   var userdata;
+
+  @override
+  void initState() {
+    // AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+    //   if(!isAllowed) {
+    //     AwesomeNotifications().requestPermissionToSendNotifications();
+    //   }
+    // });
+  }
 
   @override
   Widget build(BuildContext context) {

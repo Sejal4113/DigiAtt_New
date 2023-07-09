@@ -1,3 +1,4 @@
+
 import 'package:digiatt_new/Screens/AttendanceAuth.dart';
 import 'package:digiatt_new/Screens/SignupSelect.dart';
 import 'package:digiatt_new/Screens/VerifyEmailScreen.dart';
@@ -10,6 +11,9 @@ import 'package:provider/provider.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // AwesomeNotifications().initialize(null, [
+  //   NotificationChannel(channelKey: 'basic_channel', channelName: 'Basic Notifications', channelDescription: 'Basic Notifications for DigiAtt app')
+  // ]);
   MobileAds.instance.initialize();
   await Firebase.initializeApp();
   runApp(MyApp());

@@ -60,13 +60,10 @@ class _AttendanceAuthState extends State<AttendanceAuth> {
         children: [
           Expanded(
             child: Container(
-              margin: EdgeInsets.all(40),
+              margin: EdgeInsets.symmetric(horizontal: 40),
               child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => HomeScreen()));
+                    Navigator.pop(context);
                   },
                   child: Text('Go back')),
             ),
@@ -76,6 +73,7 @@ class _AttendanceAuthState extends State<AttendanceAuth> {
         ],
       ),
       bottomNavigationBar: _banner == null ? Container() : Container(
+        width: MediaQuery.of(context).size.width,
         margin: EdgeInsets.only(bottom: 12),
         height: 52,
         child: AdWidget(ad: _banner!),

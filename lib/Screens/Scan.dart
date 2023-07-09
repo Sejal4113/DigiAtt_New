@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digiatt_new/Screens/AttendanceAuth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
@@ -57,6 +58,10 @@ class _ScanState extends State<Scan> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
+
+          // flutter_beacon Package code
+
+
           (isScanning) ? GestureDetector(
             onLongPress: () async {
               // to stop ranging beacons
@@ -107,6 +112,7 @@ class _ScanState extends State<Scan> {
                   setState(() {
                     isScanning = false;
                   });
+
                   await authenticate();
 
                   if(authenticated){
@@ -116,11 +122,10 @@ class _ScanState extends State<Scan> {
                         .collection('Attendance')
                         .doc(attend_data['id'].toString());
 
-                    reference.collection('Lists').doc(userModel.name).set({
-                      'name' : userModel.name,
-                      'email' : userModel.email,
+                    reference.collection('Lists').doc(FirebaseAuth.instance.currentUser!.uid).update({
                       'Present' : true,
                     }).then((value) {
+                      Navigator.pop(context);
                       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => AttendanceAuth()));
                     });
 
@@ -135,7 +140,8 @@ class _ScanState extends State<Scan> {
                   , child: Icon(Icons.bluetooth_disabled,size: 80,color: Colors.grey,)),
               Text('Long Press to Start/Stop Scanning...',style: TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Inter',fontSize: 18),),
             ],
-          )),
+          ),
+          ),
 //           Container(
 //             width: 200,
 //             child: ElevatedButton(onPressed: (!isScanning) ? () async {
