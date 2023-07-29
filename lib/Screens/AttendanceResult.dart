@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digiatt_new/main.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:to_csv/to_csv.dart' as exportCSV;
 
 class AttendanceResult extends StatefulWidget {
@@ -104,8 +105,14 @@ class _AttendanceResultState extends State<AttendanceResult> {
                               child: Container(
                                   margin: EdgeInsets.only(left: 20, right: 20),
                                   child: ElevatedButton(
-                                      onPressed: () {
-                                        List<List<String>> res_data = [[
+                                      onPressed: () async {
+                                        var metadata = await FirebaseFirestore.instance.collection('Classes').doc(classModel['id']).collection('Attendance').doc(attend_data['id']).get();
+                                        var datetime = DateTime.fromMillisecondsSinceEpoch(metadata['timestamp']);
+                                        List<List<String>> res_data = [[],[
+                                          'Subject', '${metadata['subject']}'
+                                        ],[
+                                          'Date' , '${DateFormat.yMd().format(datetime)}'
+                                        ],['Time','${DateFormat.jm().format(datetime)}'],[],[],[
                                           'Sr. No.',
                                           'Name',
                                           'Email',
@@ -137,15 +144,17 @@ class _AttendanceResultState extends State<AttendanceResult> {
                                           }
 
 
+
                                         }
+                                        String filename = 'Attendance_Data_${metadata['subject']}_${DateFormat.yMd().format(datetime)}_${DateFormat.jm().format(datetime)}';
                                         List<String> header = [
                                           'Sr. No.',
                                           'Name',
                                           'Email',
                                           'Attendance'
                                         ];
-
                                         exportCSV.myCSV(header, res_data);
+                                        // exportCSV.myCSV(header, res_data,'Attendance_Data_${metadata['subject']}_${DateFormat.yMd().format(datetime)}_${DateFormat.jm().format(datetime)}');
                                       },
                                       child: Text('Download CSV')))),
                         ],

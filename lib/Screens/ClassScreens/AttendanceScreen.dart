@@ -32,7 +32,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
   _AttendanceScreenState(this.attend_data, this.userModel, this.ClassModel);
 
   Timer? timer;
-  static const maxSeconds = 120;
+  static const maxSeconds = 60;
   int seconds = maxSeconds;
   BeaconBroadcast beaconBroadcast = BeaconBroadcast();
   final List<AppLifecycleState> _stateHistoryList = <AppLifecycleState>[];

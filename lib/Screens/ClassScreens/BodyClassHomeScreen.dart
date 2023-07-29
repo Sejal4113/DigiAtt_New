@@ -1,14 +1,18 @@
 import 'package:awesome_circular_chart/awesome_circular_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:beacon_broadcast/beacon_broadcast.dart' as Broadcast;
+import 'package:digiatt_new/Screens/AttendanceResult.dart';
 import 'package:digiatt_new/Screens/TakeAttendance.dart';
 import 'package:digiatt_new/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../methods/UserModel.dart';
+import '../AttendanceData.dart';
+import '../ShowAttendance.dart';
 import 'AttendanceScreen.dart';
 
 class BodyClassHomeScreen extends StatefulWidget {
@@ -47,6 +51,10 @@ class _BodyClassHomeScreenState extends State<BodyClassHomeScreen> {
   var timestamp;
   bool isLoading = true;
 
+  //Teacher VAriables
+  final last5AttendData = [];
+
+  //STudent VAriables
   final subLists = [];
   DateTime Date = DateTime.now();
   TimeOfDay time = TimeOfDay.now();
@@ -104,238 +112,271 @@ class _BodyClassHomeScreenState extends State<BodyClassHomeScreen> {
                 label: Text('Mark attendance'),
               ),
         body: (userModel.role == 'teacher')
-            ? Container(
-                color: Colors.grey.shade200,
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8),
-                  child: Column(
-                    children: [
-                      Card(
-                        elevation: 10,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          child: Column(
-                            children: [
-                              Text(
-                                'Take Attendance',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              Divider(
-                                thickness: 1.5,
-                              ),
-                              Form(
-                                key: FormKey,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 32.0),
-                                  child: DropdownButtonFormField(
-                                    validator: (value) => (value == null)
-                                        ? 'Please Select Subject'
-                                        : null,
-                                    hint: Text('Select Subjects'),
-                                    isExpanded: true,
-                                    value: initialvalue,
-                                    items: subLists
-                                        .map((e) => DropdownMenuItem(
-                                              value: e,
-                                              child: Text(e),
-                                            ))
-                                        .toList(),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        initialvalue = value;
-                                      });
-                                    },
+            ? (isLoading) ? Center(child: CircularProgressIndicator(),):SingleChildScrollView(
+              child: Container(
+                  color: Colors.grey.shade200,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8),
+                    child: Column(
+                      children: [
+                        Card(
+                          elevation: 10,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15)),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  'Take Attendance',
+                                  style: TextStyle(
+                                      fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                Divider(
+                                  thickness: 1.5,
+                                ),
+                                Form(
+                                  key: FormKey,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 32.0),
+                                    child: DropdownButtonFormField(
+                                      validator: (value) => (value == null)
+                                          ? 'Please Select Subject'
+                                          : null,
+                                      hint: Text('Select Subjects'),
+                                      isExpanded: true,
+                                      value: initialvalue,
+                                      items: subLists
+                                          .map((e) => DropdownMenuItem(
+                                                value: e,
+                                                child: Text(e),
+                                              ))
+                                          .toList(),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          initialvalue = value;
+                                        });
+                                      },
+                                    ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(
-                                height: size.height * 0.05,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Text(
-                                    'Date : ${Date.day}/${Date.month}/${Date.year}',
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                  SizedBox(),
-                                  IconButton(
-                                    onPressed: () async {
-                                      DateTime? newDate = await showDatePicker(
-                                        context: context,
-                                        initialDate: Date,
-                                        firstDate: DateTime(1999),
-                                        lastDate: DateTime(2300),
-                                      );
+                                SizedBox(
+                                  height: size.height * 0.05,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      'Date : ${Date.day}/${Date.month}/${Date.year}',
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                    SizedBox(),
+                                    IconButton(
+                                      onPressed: () async {
+                                        DateTime? newDate = await showDatePicker(
+                                          context: context,
+                                          initialDate: Date,
+                                          firstDate: DateTime(1999),
+                                          lastDate: DateTime(2300),
+                                        );
 
-                                      if (newDate == null) return;
+                                        if (newDate == null) return;
 
-                                      setState(() {
-                                        Date = newDate;
-                                      });
-                                    },
-                                    icon: Icon(Icons.date_range_rounded),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: size.height * 0.05,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Text(
-                                    "Time : ${time.hour} : ${time.minute}",
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                  SizedBox(
-                                    height: 1,
-                                  ),
-                                  IconButton(
-                                    onPressed: () async {
-                                      TimeOfDay? newTime = await showTimePicker(
-                                        context: context,
-                                        initialTime: time,
-                                      );
-                                      if (newTime == null) return;
+                                        setState(() {
+                                          Date = newDate;
+                                        });
+                                      },
+                                      icon: Icon(Icons.date_range_rounded),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: size.height * 0.05,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      "Time : ${time.hour} : ${time.minute}",
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                    SizedBox(
+                                      height: 1,
+                                    ),
+                                    IconButton(
+                                      onPressed: () async {
+                                        TimeOfDay? newTime = await showTimePicker(
+                                          context: context,
+                                          initialTime: time,
+                                        );
+                                        if (newTime == null) return;
 
-                                      setState(() {
-                                        time = newTime;
-                                      });
-                                    },
-                                    icon: Icon(Icons.access_time),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: size.height * 0.1,
-                              ),
-                              Container(
-                                child: __supportState == _SupportState.supported
-                                    ? ElevatedButton(
-                                        onPressed: () async {
-                                          if (FormKey.currentState!
-                                              .validate()) {
-                                            timestamp = DateTime(
-                                                    Date.year,
-                                                    Date.month,
-                                                    Date.day,
-                                                    time.hour,
-                                                    time.minute)
-                                                .millisecondsSinceEpoch;
-                                            var attend_id = (DateTime(
-                                                            Date.year,
-                                                            Date.month,
-                                                            Date.day,
-                                                            time.hour,
-                                                            time.minute)
-                                                        .millisecondsSinceEpoch /
-                                                    10)
-                                                .toInt()
-                                                .toString();
-                                            var map = {
-                                              'subject': initialvalue,
-                                              'timestamp': timestamp,
-                                              'id': attend_id,
-                                            };
-                                            var reference =
-                                                await FirebaseFirestore.instance
-                                                    .collection('Classes')
-                                                    .doc(classModel['id'])
-                                                    .collection('Attendance')
-                                                    .doc(attend_id);
-                                            await reference.set(map);
+                                        setState(() {
+                                          time = newTime;
+                                        });
+                                      },
+                                      icon: Icon(Icons.access_time),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: size.height * 0.1,
+                                ),
+                                Container(
+                                  child: __supportState == _SupportState.supported
+                                      ? ElevatedButton(
+                                          onPressed: () async {
+                                            if (FormKey.currentState!
+                                                .validate()) {
+                                              timestamp = DateTime(
+                                                      Date.year,
+                                                      Date.month,
+                                                      Date.day,
+                                                      time.hour,
+                                                      time.minute)
+                                                  .millisecondsSinceEpoch;
+                                              var attend_id = (DateTime(
+                                                              Date.year,
+                                                              Date.month,
+                                                              Date.day,
+                                                              time.hour,
+                                                              time.minute)
+                                                          .millisecondsSinceEpoch /
+                                                      10)
+                                                  .toInt()
+                                                  .toString();
+                                              var map = {
+                                                'subject': initialvalue,
+                                                'timestamp': timestamp,
+                                                'id': attend_id,
+                                              };
+                                              var reference =
+                                                  await FirebaseFirestore.instance
+                                                      .collection('Classes')
+                                                      .doc(classModel['id'])
+                                                      .collection('Attendance')
+                                                      .doc(attend_id);
+                                              await reference.set(map);
 
-                                            await FirebaseFirestore.instance
-                                                .collection('Classes')
-                                                .doc(classModel['id'])
-                                                .collection('members')
-                                                .where('role',
-                                                    isEqualTo: 'student')
-                                                .get()
-                                                .then((querySnapshot) async {
-                                              var ref =
-                                                  reference.collection('Lists');
-                                              for (var docSnapshot
-                                                  in querySnapshot.docs) {
-                                                await ref.doc(docSnapshot.id);
-                                                await ref
-                                                    .doc(docSnapshot.id)
-                                                    .set({
-                                                  'Present': false,
-                                                  'id': docSnapshot.id,
-                                                  'name': docSnapshot
-                                                      .data()['name'],
-                                                  'email': docSnapshot
-                                                      .data()['email'],
-                                                  'photourl': docSnapshot
-                                                      .data()['photourl']
-                                                });
-                                                print(
-                                                    '${docSnapshot.id} => ${docSnapshot.data()}');
+                                              await FirebaseFirestore.instance
+                                                  .collection('Classes')
+                                                  .doc(classModel['id'])
+                                                  .collection('members')
+                                                  .where('role',
+                                                      isEqualTo: 'student')
+                                                  .get()
+                                                  .then((querySnapshot) async {
+                                                var ref =
+                                                    reference.collection('Lists');
+                                                for (var docSnapshot
+                                                    in querySnapshot.docs) {
+                                                  await ref.doc(docSnapshot.id);
+                                                  await ref
+                                                      .doc(docSnapshot.id)
+                                                      .set({
+                                                    'Present': false,
+                                                    'id': docSnapshot.id,
+                                                    'name': docSnapshot
+                                                        .data()['name'],
+                                                    'email': docSnapshot
+                                                        .data()['email'],
+                                                    'photourl': docSnapshot
+                                                        .data()['photourl']
+                                                  });
+                                                  print(
+                                                      '${docSnapshot.id} => ${docSnapshot.data()}');
+                                                }
+                                              });
+
+                                              Broadcast.BeaconStatus status =
+                                                  await checkStatus();
+                                              if (status ==
+                                                  Broadcast
+                                                      .BeaconStatus.supported) {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            AttendanceScreen(
+                                                              attend_data: map,
+                                                              userModel:
+                                                                  userModel,
+                                                              ClassModel:
+                                                                  classModel,
+                                                            )));
                                               }
-                                            });
-
-                                            Broadcast.BeaconStatus status =
-                                                await checkStatus();
-                                            if (status ==
-                                                Broadcast
-                                                    .BeaconStatus.supported) {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          AttendanceScreen(
-                                                            attend_data: map,
-                                                            userModel:
-                                                                userModel,
-                                                            ClassModel:
-                                                                classModel,
-                                                          )));
                                             }
-                                          }
-                                        },
-                                        child: Text('Take Attendance'))
-                                    : Text('not supported'),
-                              ),
-                            ],
+                                          },
+                                          child: Text('Take Attendance'))
+                                      : Text('not supported'),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Card(
-                        elevation: 10,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          child: Column(
-                            children: [
-                              Text(
-                                'Attendance History',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              Divider(
-                                thickness: 2,
-                              ),
-                            ],
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Card(
+                          elevation: 10,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15)),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  'Attendance History',
+                                  style: TextStyle(
+                                      fontSize: 20, fontWeight: FontWeight.bold),
+                                ),
+                                Divider(
+                                  thickness: 2,
+                                ),
+                               Container(
+                                 decoration: BoxDecoration(
+                                   borderRadius: BorderRadius.only(bottomRight: Radius.circular(12),bottomLeft: Radius.circular(12)),
+                                   color: Colors.grey.shade200,
+                                 ),
+                                 margin: EdgeInsets.symmetric(horizontal: 16),
+
+                                 child: Padding(
+                                   padding: const EdgeInsets.all(8.0),
+                                   child: ListView.builder(shrinkWrap: true,reverse: true,physics:NeverScrollableScrollPhysics(),itemCount: last5AttendData.length,itemBuilder: (context,index) {
+                                     return Card(
+                                         child: ListTile(
+                                           onTap: () {
+                                             Navigator.push(context, MaterialPageRoute(builder: (context) => ShowAttendance(attend_data: last5AttendData[index], classModel: classModel)));
+                                           },
+                                           title: Text(last5AttendData[index]['subject'], style: TextStyle(fontWeight: FontWeight.bold),),
+                                           subtitle: Text('Date : '+DateFormat('d MMM yyyy, h.mm a').format(DateTime.fromMillisecondsSinceEpoch(last5AttendData[index]['timestamp']))),
+                                         ),
+                                     );
+                                   }),
+                                 ),
+                               ),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AttendanceData(classModel: classModel,)));
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.only(right: 16,top: 6,),
+                                    child: Align(alignment: Alignment.bottomRight,child: Text('Show More',style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blue,decoration: TextDecoration.underline),)),
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              )
+            )
             : (isLoading)
                 ? Center(
                     child: CircularProgressIndicator(),
@@ -501,12 +542,17 @@ class _BodyClassHomeScreenState extends State<BodyClassHomeScreen> {
   }
 
   Future<void> getTeacherData() async {
+
     await FirebaseFirestore.instance.collection('Classes').doc(classModel['id']).collection('Attendance').orderBy('timestamp').limit(5).get().then((element) {
       for(int i=0;i< element.size;i++) {
         var data = element.docs[i].data();
-        //TODO Get data and store in a list
+        last5AttendData.add(data);
       }
-    });}
+    });
+    setState(() {
+      isLoading = false;
+    });
+  }
 }
 
 enum _SupportState {
